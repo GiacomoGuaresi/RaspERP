@@ -1,35 +1,41 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Magazzino</title>
-</head>
-<body>
-    <h1>Gestione Magazzino</h1>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container d-flex flex-column justify-content-center align-items-center vh-100">
+    <h1 class="mb-4">Gestione Magazzino</h1>
 
-    <!-- Form per inserire il codice -->
-    <form method="POST">
-        <label for="item_code">Scansiona o inserisci il codice:</label>
-        <input type="text" id="item_code" name="item_code" autofocus required>
-        <button type="submit">Conferma</button>
-    </form>
-
-    <!-- Mostra solo l'ultimo elemento aggiornato -->
     {% if last_item %}
-        <h2>Ultimo elemento modificato</h2>
-        <table border="1">
-            <tr>
-                <th>Item Code</th>
-                <th>Totale Magazzino</th>
-                <th>Aggiunti ora</th>
-            </tr>
-            <tr>
-                <td>{{ last_item.ItemCode }}</td>
-                <td>{{ last_item.Quantity }}</td>
-                <td>{{ last_added_count }}</td>
-            </tr>
-        </table>
+    <div class="card text-center w-50">
+        <div class="card-header bg-primary text-white">
+            Ultimo elemento modificato
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item Code</th>
+                        <th>Totale Magazzino</th>
+                        <th>Aggiunti ora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ last_item.ItemCode }}</td>
+                        <td>{{ last_item.Quantity }}</td>
+                        <td>{{ last_added_count }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     {% endif %}
-</body>
-</html>
+
+    <div class="fixed-bottom bg-dark py-3">
+        <form method="POST" class="container d-flex flex-column align-items-center">
+            <label for="item_code" class="text-white fs-3">Scansiona o inserisci il codice:</label>
+            <input type="text" id="item_code" name="item_code" class="form-control text-center fs-1 w-75" autofocus required>
+            <button type="submit" class="btn btn-success btn-lg mt-3">Conferma</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

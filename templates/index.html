@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>Benvenuto</h1>
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('view_bom') }}">BOM</a></li>
-            <li><a href="{{ url_for('view_commission') }}">Commission</a></li>
-            <li><a href="{{ url_for('view_item') }}">Item</a></li>
-            <li><a href="{{ url_for('view_stock') }}">Stock</a></li>
-        </ul>
-    </nav>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <h1 class="text-center">Benvenuto in LiteManagement</h1>
+    <p class="text-muted text-center">Gestisci il magazzino e le commesse facilmente.</p>
+    <ul>
+        <li><a href="{{ url_for('view_bom') }}">BOM</a></li>
+        <li><a href="{{ url_for('view_commission') }}">Commission</a></li>
+        <li><a href="{{ url_for('view_item') }}">Item</a></li>
+        <li><a href="{{ url_for('view_stock') }}">Stock</a></li>
+    </ul>
+{% endblock %}

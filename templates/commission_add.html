@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="it">
-
-<head>
-    <title>Aggiungi Commission</title>
-</head>
-
-<body>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
     <h1>Aggiungi Commission</h1>
     <form method="POST">
         <label for="date">Data:</label>
@@ -20,6 +15,4 @@
         <button type="submit">Aggiungi Commissione</button>
     </form>
     <a href="{{ url_for('view_commission') }}">Torna indietro</a>
-</body>
-
-</html>
+{% endblock %}

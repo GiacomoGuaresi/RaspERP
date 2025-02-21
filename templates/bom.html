@@ -1,17 +1,33 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <title>BOM</title>
-</head>
-<body>
-    <h1>Lista BOM</h1>
-    <a href="{{ url_for('add_bom') }}">Aggiungi nuovo</a>
-    <ul>
+{% extends "base.html" %}
+{% block title %}Lista BOM{% endblock %}
+{% block content %}
+
+<h2 class="text-center my-3">Lista BOM</h2>
+<a href="{{ url_for('add_bom') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
+
+<table id="bomTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codice</th>
+            <th>Nome</th>
+            <th>Quantità</th>
+            <th>Azioni</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for row in data %}
-            <li>{{ row[0] }} - {{ row[1] }} - {{ row[2] }}
-                <a href="{{ url_for('delete_bom', code=row[0]) }}">Elimina</a>
-            </li>
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>
+                <a href="{{ url_for('delete_bom', code=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </tbody>
+</table>
+
+{% include 'datatable_setup.html' %}
+
+{% endblock %}

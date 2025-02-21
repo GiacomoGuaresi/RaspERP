@@ -1,17 +1,35 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <title>Stock</title>
-</head>
-<body>
-    <h1>Lista Magazzino</h1>
-    <ul>
+{% extends "base.html" %}
+{% block title %}Lista Magazzino{% endblock %}
+{% block content %}
+
+<h2 class="text-center my-3">Lista Magazzino</h2>
+
+<table id="stockTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Codice</th>
+            <th>Totali</th>
+            <th>Bloccate</th>
+            <th>Disponibili</th>
+            <th>Azioni</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for row in data %}
-            <li>{{ row[0] }} - {{ row[1] }} - {{ row[2] }}
-                <a href="{{ url_for('increase_stock', itemCode=row[0]) }}">+</a>
-                <a href="{{ url_for('decrease_stock', itemCode=row[0]) }}">-</a>
-            </li>
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[1]-row[2] }}</td>
+            <td>
+                <a href="{{ url_for('increase_stock', itemCode=row[0]) }}" class="btn btn-success btn-sm">+</a>
+                <a href="{{ url_for('decrease_stock', itemCode=row[0]) }}" class="btn btn-danger btn-sm">-</a>
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
-</body>
-</html>
+    </tbody>
+</table>
+
+{% include 'datatable_setup.html' %}
+
+{% endblock %}

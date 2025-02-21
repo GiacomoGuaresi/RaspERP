@@ -1,21 +1,35 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <title>Commission Progress</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
     <h1>Lista Commission Progress</h1>
-    <a href="{{ url_for('complete_commission', id=id)}}"> Completa Commission</a>
-    <ul>
-        {% for row in data %}
-            <li>{{ row[2] }} {{ row[6] }} - {{ row[4] }}/{{ row[3] }}
-                <a href="{{ url_for('increase_commissionprogress', id=row[0], returnId=id) }}">+</a>
-                <a href="{{ url_for('decrease_commissionprogress', id=row[0], returnId=id) }}">-</a>
-                {% if row[6]=="SubAssembly" and row[4]<row[3] %}
-                    <a href="{{ url_for('add_commission', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}">Crea Commissione</a>
-                {% endif %}
-            </li>
-        {% endfor %}    
-    </ul>
-</body>
-</html>
+    <a href="{{ url_for('complete_commission', id=id)}}" class="btn btn-primary mb-3"> Completa Commission</a>
+    <table id="commissionTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Codice</th>
+                <th>Tipo</th>
+                <th>Progresso</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[6] }}</td>
+                <td>{{ row[4] }}/{{ row[3] }}</td>
+                <td>
+                    <a href="{{ url_for('increase_commissionprogress', id=row[0], returnId=id) }}" class="btn btn-success btn-sm">+</a>
+                    <a href="{{ url_for('decrease_commissionprogress', id=row[0], returnId=id) }}" class="btn btn-danger btn-sm">-</a>
+                    {% if row[6] == "SubAssembly" and row[4] < row[3] %}
+                        <a href="{{ url_for('add_commission', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Crea Commissione</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% include 'datatable_setup.html' %}
+    
+{% endblock %}

@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <title>Aggiungi BOM</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
     <h1>Aggiungi BOM</h1>
     <form method="post">
         Code: <input type="text" name="code" required><br>
@@ -12,5 +9,4 @@
         <button type="submit">Aggiungi</button>
     </form>
     <a href="{{ url_for('view_bom') }}">Torna indietro</a>
-</body>
-</html>
+{% endblock %}
