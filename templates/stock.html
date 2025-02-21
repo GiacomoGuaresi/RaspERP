@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Stock</title>
+</head>
+<body>
+    <h1>Lista Magazzino</h1>
+    <ul>
+        {% for row in data %}
+            <li>{{ row[0] }} - {{ row[1] }} - {{ row[2] }}
+                <a href="{{ url_for('increase_stock', itemCode=row[0]) }}">+</a>
+                <a href="{{ url_for('decrease_stock', itemCode=row[0]) }}">-</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

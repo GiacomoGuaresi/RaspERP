@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Commission Progress</title>
+</head>
+<body>
+    <h1>Lista Commission Progress</h1>
+    <a href="{{ url_for('complete_commission', id=id)}}"> Completa Commission</a>
+    <ul>
+        {% for row in data %}
+            <li>{{ row[2] }} {{ row[6] }} - {{ row[4] }}/{{ row[3] }}
+                <a href="{{ url_for('increase_commissionprogress', id=row[0], returnId=id) }}">+</a>
+                <a href="{{ url_for('decrease_commissionprogress', id=row[0], returnId=id) }}">-</a>
+                {% if row[6]=="SubAssembly" and row[4]<row[3] %}
+                    <a href="{{ url_for('add_commission', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}">Crea Commissione</a>
+                {% endif %}
+            </li>
+        {% endfor %}    
+    </ul>
+</body>
+</html>

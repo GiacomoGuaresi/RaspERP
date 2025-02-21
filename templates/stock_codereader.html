@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Magazzino</title>
+</head>
+<body>
+    <h1>Gestione Magazzino</h1>
+
+    <!-- Form per inserire il codice -->
+    <form method="POST">
+        <label for="item_code">Scansiona o inserisci il codice:</label>
+        <input type="text" id="item_code" name="item_code" autofocus required>
+        <button type="submit">Conferma</button>
+    </form>
+
+    <!-- Mostra solo l'ultimo elemento aggiornato -->
+    {% if last_item %}
+        <h2>Ultimo elemento modificato</h2>
+        <table border="1">
+            <tr>
+                <th>Item Code</th>
+                <th>Totale Magazzino</th>
+                <th>Aggiunti ora</th>
+            </tr>
+            <tr>
+                <td>{{ last_item.ItemCode }}</td>
+                <td>{{ last_item.Quantity }}</td>
+                <td>{{ last_added_count }}</td>
+            </tr>
+        </table>
+    {% endif %}
+</body>
+</html>

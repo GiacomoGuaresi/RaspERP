@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Item</title>
+</head>
+<body>
+    <h1>Lista Item</h1>
+    <a href="{{ url_for('add_item') }}">Aggiungi nuovo</a>
+    <ul>
+        {% for row in data %}
+            <li>{{ row[0] }} - {{ row[1] }}
+                <a href="{{ url_for('delete_item', code=row[0]) }}">Elimina</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
