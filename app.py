@@ -61,7 +61,7 @@ def add_BillOfMaterials():
 
 @app.route('/BillOfMaterials/delete/<ProductCode>')
 def delete_BillOfMaterials(ProductCode):
-    query_db('DELETE FROM BillOfMaterials WHERE ProductCode = ?', (ProductCode,))
+    query_db('DELETE FROM BillOfMaterials WHERE BillOfMaterialID = ?', (ProductCode,))
     return redirect(url_for('view_BillOfMaterials'))
 
 # ProductionOrder Routes
@@ -133,8 +133,14 @@ def complete_ProductionOrder(OrderID):
 # ProductionOrderProgress Routes
 @app.route('/ProductionOrderProgress/<int:OrderID>')
 def view_ProductionOrderProgress(OrderID):
-    data = query_db('SELECT ProductionOrderProgress.*, Product.* FROM ProductionOrderProgress JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode WHERE ProductionOrderProgress.OrderID = ?', (OrderID,))
-    return render_template('ProductionOrderProgress.html', data=data, current_date=date.today().isoformat(), id=OrderID)
+    data = query_db("""
+                    SELECT ProductionOrderProgress.*, Product.*, ProductionOrder.OrderID as childOrderId FROM ProductionOrderProgress 
+                    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode 
+                    LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID AND ProductionOrder.ProductCode = ProductionOrderProgress.ProductCode
+                    WHERE ProductionOrderProgress.OrderID = ?
+                    """, (OrderID,))
+    order = query_db('SELECT * FROM ProductionOrder WHERE OrderID = ?', (OrderID, ))[0]
+    return render_template('ProductionOrderProgress.html', data=data, current_date=date.today().isoformat(), order=order)
 
 
 @app.route('/ProductionOrderProgress/increase/<int:ProgressID>')
@@ -195,9 +201,12 @@ def view_Product():
 @app.route('/Product/add', methods=['GET', 'POST'])
 def add_Product():
     if request.method == 'POST':
-        query_db('INSERT INTO Product (ProductCode, Category) VALUES (?, ?)',
-                 (request.form['ProductCode'], request.form['Category']))
-        return redirect(url_for('view_Product'))
+        try:
+            query_db('INSERT INTO Product (ProductCode, Category) VALUES (?, ?)',
+                    (request.form['ProductCode'], request.form['Category']))
+            return redirect(url_for('view_Product'))
+        except:
+            return render_template('Product_add.html', message='the product ' + request.form['ProductCode'] + ' is already present in the database')        
     return render_template('Product_add.html')
 
 

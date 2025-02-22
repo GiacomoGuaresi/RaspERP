@@ -17,9 +17,9 @@
     <tbody>
         {% for row in data %}
         <tr>
-            <td>{{ row[0] }}</td>
             <td>{{ row[1] }}</td>
             <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
             <td>
                 <a href="{{ url_for('delete_BillOfMaterials', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
             </td>

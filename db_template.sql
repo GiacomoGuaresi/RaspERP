@@ -1,8 +1,8 @@
 CREATE TABLE "BillOfMaterials" (
+    "BillOfMaterialID" INTEGER PRIMARY KEY AUTOINCREMENT,
     "ProductCode" TEXT NOT NULL,
     "ChildProductCode" TEXT NOT NULL,
-    "Quantity" INTEGER NOT NULL DEFAULT 1,
-    PRIMARY KEY("ProductCode", "ChildProductCode")
+    "Quantity" INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE "ProductionOrder" (
@@ -10,7 +10,8 @@ CREATE TABLE "ProductionOrder" (
     "OrderDate" TEXT NOT NULL,
     "ProductCode" TEXT NOT NULL,
     "Quantity" INTEGER NOT NULL DEFAULT 1,
-    "Status" TEXT NOT NULL DEFAULT 'Planned'
+    "Status" TEXT NOT NULL DEFAULT 'Planned',
+    "ParentOrderID" INTEGER
 );
 
 CREATE TABLE "ProductionOrderProgress" (
