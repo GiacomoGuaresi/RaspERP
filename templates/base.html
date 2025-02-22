@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="/">LiteManagement</a>
+                <a class="navbar-brand" href="/">
+                    <img src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
+                    RaspERP
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
