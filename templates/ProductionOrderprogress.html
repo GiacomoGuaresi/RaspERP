@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-    <h1>Lista Commission Progress</h1>
-    <a href="{{ url_for('complete_commission', id=id)}}" class="btn btn-primary mb-3"> Completa Commission</a>
-    <table id="commissionTable" class="table table-striped">
+    <h1>Lista ProductionOrder Progress</h1>
+    <a href="{{ url_for('complete_ProductionOrder', OrderID=id)}}" class="btn btn-primary mb-3"> Completa ProductionOrder</a>
+    <table id="ProductionOrderTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Codice</th>
@@ -19,10 +19,10 @@
                 <td>{{ row[6] }}</td>
                 <td>{{ row[4] }}/{{ row[3] }}</td>
                 <td>
-                    <a href="{{ url_for('increase_commissionprogress', id=row[0], returnId=id) }}" class="btn btn-success btn-sm">+</a>
-                    <a href="{{ url_for('decrease_commissionprogress', id=row[0], returnId=id) }}" class="btn btn-danger btn-sm">-</a>
+                    <a href="{{ url_for('increase_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-success btn-sm">+</a>
+                    <a href="{{ url_for('decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-danger btn-sm">-</a>
                     {% if row[6] == "SubAssembly" and row[4] < row[3] %}
-                        <a href="{{ url_for('add_commission', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Crea Commissione</a>
+                        <a href="{{ url_for('add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Crea ProductionOrdere</a>
                     {% endif %}
                 </td>
             </tr>

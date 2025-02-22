@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Lista BOM{% endblock %}
+{% block title %}Lista BillOfMaterials{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Lista BOM</h2>
-<a href="{{ url_for('add_bom') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
+<h2 class="text-center my-3">Lista BillOfMaterials</h2>
+<a href="{{ url_for('add_BillOfMaterials') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
 
-<table id="bomTable" class="table table-striped">
+<table id="BillOfMaterialsTable" class="table table-striped">
     <thead>
         <tr>
             <th>Codice</th>
@@ -21,7 +21,7 @@
             <td>{{ row[1] }}</td>
             <td>{{ row[2] }}</td>
             <td>
-                <a href="{{ url_for('delete_bom', code=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
+                <a href="{{ url_for('delete_BillOfMaterials', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
             </td>
         </tr>
         {% endfor %}

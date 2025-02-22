@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Lista Item{% endblock %}
+{% block title %}Lista Product{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Lista Item</h2>
-<a href="{{ url_for('add_item') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
+<h2 class="text-center my-3">Lista Product</h2>
+<a href="{{ url_for('add_Product') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
 
 <table id="itemTable" class="table table-striped">
     <thead>
@@ -19,7 +19,7 @@
             <td>{{ row[0] }}</td>
             <td>{{ row[1] }}</td>
             <td>
-                <a href="{{ url_for('delete_item', code=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
+                <a href="{{ url_for('delete_Product', code=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
             </td>
         </tr>
         {% endfor %}
