@@ -1,41 +1,68 @@
-{% extends "base.html" %}
-{% block title %}BarcodeReader{% endblock %}
-{% block content %}
-<div class="container d-flex flex-column justify-content-center align-items-center vh-100">
-    <h1 class="mb-4">Gestione Magazzino</h1>
+<!DOCTYPE html>
+<html lang="it" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Barcode reader</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
+                    RaspERP
+                </a>
+            </div>
+        </nav>
+        
+    </nav>
 
-    {% if last_item %}
-    <div class="card text-center w-50">
-        <div class="card-header bg-primary text-white">
-            Ultimo elemento modificato
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Item Code</th>
-                        <th>Totale Magazzino</th>
-                        <th>Aggiunti ora</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ last_item.ProductCode }}</td>
-                        <td>{{ last_item.QuantityOnHand }}</td>
-                        <td>{{ last_added_count }}</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="container mt-4">
+        <div class="container-fluid d-flex flex-column justify-content-center align-items-center vh-100">
+            {% if last_item %}
+            <div class="card text-center w-50 mb-3">
+                <div class="card-header bg-primary text-white">
+                    Last Element
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product Code</th>
+                                <th>Total on hand</th>
+                                <th>New entry</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ last_item.ProductCode }}</td>
+                                <td>{{ last_item.QuantityOnHand }}</td>
+                                <td>{{ last_added_count }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        
+            <form method="POST" class="container-fluid d-flex flex-column align-items-center">
+                <label for="ProductCode" class="text-white fs-3">Scan the article:</label>
+                <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center fs-1 w-75" autofocus required>
+                <button type="submit" class="btn btn-success btn-lg mt-3" style="display: none;"></button>
+            </form>
         </div>
     </div>
-    {% endif %}
 
-    <div class="fixed-bottom bg-dark py-3">
-        <form method="POST" class="container d-flex flex-column align-items-center">
-            <label for="ProductCode" class="text-white fs-3">Scansiona o inserisci il codice:</label>
-            <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center fs-1 w-75" autofocus required>
-            <button type="submit" class="btn btn-success btn-lg mt-3">Conferma</button>
-        </form>
-    </div>
-</div>
-{% endblock %}
+    <footer class="bg-dark text-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi" class="text-light text-decoration-none" target="_blank">GitHub</a></p>
+            <p class="small mb-0">Built with Flask & Bootstrap 5</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -7,8 +7,6 @@ app = Flask(__name__)
 DB_NAME = 'database.db'
 # Cambia se il tuo file si chiama diversamente
 app.config['DATABASE'] = DB_NAME
-app.secret_key = "barcodeReader"  # Per gestire sessioni utente
-
 
 def get_db():
     if 'db' not in g:
@@ -261,6 +259,7 @@ def codereader_Inventory():
     cursor = db.cursor()
 
     last_Product = None  # Dati dell'ultimo prodotto aggiornato
+    last_Product_Momnet = None; 
 
     if request.method == 'POST':
         raw_code = request.form.get('ProductCode', '').strip().upper()  # Case insensitive
