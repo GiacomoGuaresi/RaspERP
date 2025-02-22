@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Production Order Details{% endblock %}
 {% block content %}
-    <h1>Lista ProductionOrder Progress</h1>
-    <a href="{{ url_for('complete_ProductionOrder', OrderID=id)}}" class="btn btn-primary mb-3"> Completa ProductionOrder</a>
+    <h1>Production Order Details</h1>
+    <a href="{{ url_for('complete_ProductionOrder', OrderID=id)}}" class="btn btn-primary mb-3"> Mark as complete</a>
     <table id="ProductionOrderTable" class="table table-striped">
         <thead>
             <tr>
-                <th>Codice</th>
-                <th>Tipo</th>
-                <th>Progresso</th>
-                <th>Azioni</th>
+                <th>ProductCode</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +22,7 @@
                     <a href="{{ url_for('increase_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-success btn-sm">+</a>
                     <a href="{{ url_for('decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-danger btn-sm">-</a>
                     {% if row[6] == "SubAssembly" and row[4] < row[3] %}
-                        <a href="{{ url_for('add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Crea ProductionOrdere</a>
+                        <a href="{{ url_for('add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Add Production order</a>
                     {% endif %}
                 </td>
             </tr>

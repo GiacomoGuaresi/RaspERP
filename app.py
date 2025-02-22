@@ -56,7 +56,9 @@ def add_BillOfMaterials():
         query_db('INSERT INTO BillOfMaterials (ProductCode, ChildProductCode, Quantity) VALUES (?, ?, ?)',
                  (request.form['ProductCode'], request.form['ChildProductCode'], int(request.form['Quantity'])))
         return redirect(url_for('view_BillOfMaterials'))
-    return render_template('BillOfMaterials_add.html')
+    
+    product_codes = query_db('SELECT ProductCode FROM Product')
+    return render_template('BillOfMaterials_add.html', product_codes=product_codes)
 
 
 @app.route('/BillOfMaterials/delete/<ProductCode>')
@@ -79,14 +81,14 @@ def add_ProductionOrder():
         db = get_db()
         cursor = db.cursor()
 
-        date = request.form['OrderDate']
+        orderDate = request.form['OrderDate']
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
 
         # Inserisce la ProductionOrdere principale
         cursor.execute(
             'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity) VALUES (?, ?, ?)',
-            (date, code, quantity)
+            (orderDate, code, quantity)
         )
         inserted_id = cursor.lastrowid
 
@@ -106,12 +108,14 @@ def add_ProductionOrder():
 
         db.commit()
         return redirect(url_for('view_ProductionOrder'))
-
-    date = request.args.get('date', '')
+        
+    orderDate = request.args.get('date', date.today().isoformat())
     code = request.args.get('code', '')
     quantity = request.args.get('quantity', '')
 
-    return render_template('ProductionOrder_add.html', OrderDate=date, ProductCode=code, Quantity=quantity)
+    product_codes = query_db('SELECT ProductCode FROM Product')
+
+    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes)
 
 
 @app.route('/ProductionOrder/delete/<OrderID>')
@@ -194,14 +198,14 @@ def view_Product():
 def add_Product():
     if request.method == 'POST':
         query_db('INSERT INTO Product (ProductCode, Category) VALUES (?, ?)',
-                 (request.form['ProductCode'], request.form['Type']))
+                 (request.form['ProductCode'], request.form['Category']))
         return redirect(url_for('view_Product'))
     return render_template('Product_add.html')
 
 
 @app.route('/Product/delete/<code>')
 def delete_Product(code):
-    query_db('DELETE FROM Product WHERE Code = ?', (code,))
+    query_db('DELETE FROM Product WHERE ProductCode = ?', (code,))
     return redirect(url_for('view_Product'))
 
 

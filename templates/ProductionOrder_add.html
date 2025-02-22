@@ -1,18 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Add Production Order{% endblock %}
 {% block content %}
-    <h1>Aggiungi ProductionOrder</h1>
-    <form method="POST">
-        <label for="date">Data:</label>
-        <input type="date" id="date" name="OrderDate" value="{{ OrderDate }}" required>
-        <br>
-        <label for="code">Codice:</label>
-        <input type="text" id="code" name="ProductCode" value="{{ ProductCode }}" required>
-        <br>
-        <label for="quantity">Quantità:</label>
-        <input type="number" id="quantity" name="Quantity" value="{{ Quantity }}" min="1" required>
-        <br>
-        <button type="submit">Aggiungi ProductionOrdere</button>
-    </form>
-    <a href="{{ url_for('view_ProductionOrder') }}">Torna indietro</a>
+    <div class="container mt-4">
+        <h1>Add Production Order</h1>
+        <form method="POST" class="mt-3">
+            <div class="mb-3">
+                <label for="date" class="form-label">Order Date:</label>
+                <input type="date" id="date" name="OrderDate" value="{{ OrderDate }}" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="code" class="form-label">Product Code:</label>
+                <input type="text" id="code" name="ProductCode" list="productCodes" value="{{ ProductCode }}" class="form-control" required>
+                <datalist id="productCodes">
+                    {% for row in product_codes %}
+                        <option value="{{ row[0] }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label>
+                <input type="number" id="quantity" name="Quantity" value="{{ Quantity }}" min="1" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Production Order</button>
+            <a href="{{ url_for('view_ProductionOrder') }}" class="btn btn-secondary">Go Back</a>
+        </form>
+    </div>
 {% endblock %}

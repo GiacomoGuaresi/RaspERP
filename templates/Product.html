@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Lista Product{% endblock %}
+{% block title %}Products{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Lista Product</h2>
-<a href="{{ url_for('add_Product') }}" class="btn btn-primary mb-3">Aggiungi nuovo</a>
+<h2 class="text-center my-3">Products</h2>
+<a href="{{ url_for('add_Product') }}" class="btn btn-primary mb-3">Add new</a>
 
 <table id="itemTable" class="table table-striped">
     <thead>
         <tr>
-            <th>Codice</th>
-            <th>Tipo</th>
-            <th>Azioni</th>
+            <th>ProductCode</th>
+            <th>Category</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -19,7 +19,7 @@
             <td>{{ row[0] }}</td>
             <td>{{ row[1] }}</td>
             <td>
-                <a href="{{ url_for('delete_Product', code=row[0]) }}" class="btn btn-danger btn-sm">Elimina</a>
+                <a href="{{ url_for('delete_Product', code=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
         {% endfor %}
