@@ -22,7 +22,7 @@
                 <input type="number" id="quantity" name="Quantity" value="{{ Quantity }}" min="1" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Add Production Order</button>
-            <a href="{{ url_for('view_ProductionOrder') }}" class="btn btn-secondary">Go Back</a>
+            <a href="{{ url_for('production.view_ProductionOrder') }}" class="btn btn-secondary">Go Back</a>
         </form>
     </div>
 {% endblock %}

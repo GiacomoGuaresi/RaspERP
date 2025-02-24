@@ -3,7 +3,7 @@
 {% block content %}
 
 <h2 class="text-center my-3">Bill of materials</h2>
-<a href="{{ url_for('add_BillOfMaterials') }}" class="btn btn-primary mb-3">Add new</a>
+<a href="{{ url_for('bom.add_BillOfMaterials') }}" class="btn btn-primary mb-3">Add new</a>
 
 <table id="BillOfMaterialsTable" class="table table-striped">
     <thead>
@@ -21,7 +21,7 @@
             <td>{{ row[2] }}</td>
             <td>{{ row[3] }}</td>
             <td>
-                <a href="{{ url_for('delete_BillOfMaterials', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+                <a href="{{ url_for('bom.delete_BillOfMaterials', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
         {% endfor %}

@@ -6,7 +6,7 @@
     <p>Order date: {{ order[1] }}</p>
     <p>Quantity: {{ order[3] }}</p>
     <p>Status: {{ order[4] }}</p>
-    <a href="{{ url_for('complete_ProductionOrder', OrderID=order[0])}}" class="btn btn-primary mb-3"> Mark as complete</a>
+    <a href="{{ url_for('production.complete_ProductionOrder', OrderID=order[0])}}" class="btn btn-primary mb-3"> Mark as complete</a>
     <table id="ProductionOrderTable" class="table table-striped">
         <thead>
             <tr>
@@ -23,13 +23,13 @@
                 <td>{{ row[6] }}</td>
                 <td>{{ row[4] }}/{{ row[3] }}</td>
                 <td>
-                    <a href="{{ url_for('increase_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-success btn-sm">+</a>
-                    <a href="{{ url_for('decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-danger btn-sm">-</a>
+                    <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-success btn-sm">+</a>
+                    <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-danger btn-sm">-</a>
                     {% if row[6] == "Subassembly" and row[4] < row[3] %}
                         {% if row[7] %}
-                            <a href="{{ url_for('view_ProductionOrderProgress', OrderID=row[7]) }}" class="btn btn-primary btn-sm">View Production order</a>
+                            <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[7]) }}" class="btn btn-primary btn-sm">View Production order</a>
                         {% else %}
-                            <a href="{{ url_for('add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Add Production order</a>
+                            <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Add Production order</a>
                         {% endif %}    
                     {% endif %}
                 </td>

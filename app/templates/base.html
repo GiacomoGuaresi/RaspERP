@@ -22,10 +22,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_ProductionOrder') }}">Production orders</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_Inventory') }}">Inventory</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_Product') }}">Products</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_BillOfMaterials') }}">Bill of materials</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.view_Inventory') }}">Inventory</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of materials</a></li>
                     </ul>
                 </div>
             </div>
