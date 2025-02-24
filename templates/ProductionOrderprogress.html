@@ -23,8 +23,8 @@
                 <td>{{ row[6] }}</td>
                 <td>{{ row[4] }}/{{ row[3] }}</td>
                 <td>
-                    <a href="{{ url_for('increase_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-success btn-sm">+</a>
-                    <a href="{{ url_for('decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=id) }}" class="btn btn-danger btn-sm">-</a>
+                    <a href="{{ url_for('increase_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-success btn-sm">+</a>
+                    <a href="{{ url_for('decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-danger btn-sm">-</a>
                     {% if row[6] == "Subassembly" and row[4] < row[3] %}
                         {% if row[7] %}
                             <a href="{{ url_for('view_ProductionOrderProgress', OrderID=row[7]) }}" class="btn btn-primary btn-sm">View Production order</a>

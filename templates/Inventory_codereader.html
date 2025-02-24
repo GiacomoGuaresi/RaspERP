@@ -23,6 +23,13 @@
     </nav>
 
     <div class="container mt-4">
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{error}}
+        </div>
+        {% endif %}
+
+
         <div class="container-fluid d-flex flex-column justify-content-center align-items-center vh-100">
             {% if last_item %}
             <div class="card text-center w-50 mb-3">

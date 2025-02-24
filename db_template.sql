@@ -32,3 +32,10 @@ CREATE TABLE "Inventory" (
     "QuantityOnHand" INTEGER NOT NULL DEFAULT 0,
     "Locked" INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TABLE "Logs" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "timestamp" DATETIME DEFAULT CURRENT_TIMESTAMP,
+    "message" TEXT NOT NULL,
+    "user" TEXT
+);
