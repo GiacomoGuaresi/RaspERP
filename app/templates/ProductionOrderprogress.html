@@ -26,7 +26,7 @@
                 <td>
                     <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-success btn-sm">+</a>
                     <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row[0], OrderID=order[0]) }}" class="btn btn-danger btn-sm">-</a>
-                    {% if row[6] == "Subassembly" and row[4] < row[3] %}
+                    {% if row[6] == "Subassembly" %}
                         {% if row[7] %}
                             <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[7]) }}" class="btn btn-primary btn-sm">View Production order</a>
                         {% else %}
