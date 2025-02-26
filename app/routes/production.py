@@ -117,3 +117,45 @@ def ongoing_ProductionOrder(OrderID):
         db.commit()
 
     return redirect(url_for('production.view_ProductionOrder'))
+
+@production_bp.route('/ProductionOrder/increase/<int:OrderID>')
+def increase_ProductionOrder(OrderID):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        'SELECT QuantityCompleted, Quantity FROM ProductionOrder WHERE OrderID = ?', 
+        (OrderID,))
+    row = cursor.fetchone()
+
+    if row:
+        quantity_present, quantity_required = row
+        if quantity_present < quantity_required:
+            cursor.execute(
+                'UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted + 1 WHERE OrderID = ?',
+                (OrderID,)
+            )
+            db.commit()
+
+    return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
+
+
+
+@production_bp.route('/ProductionOrder/decrease/<int:OrderID>')
+def decrease_ProductionOrder(OrderID):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        'SELECT QuantityCompleted FROM ProductionOrder WHERE OrderID = ?', (OrderID,))
+    row = cursor.fetchone()
+
+    if row and row[0] > 0:
+        cursor.execute(
+            'UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted - 1 WHERE OrderID = ?',
+            (OrderID,)
+        )
+        db.commit()
+
+    return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
+

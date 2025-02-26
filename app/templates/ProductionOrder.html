@@ -17,12 +17,12 @@
     </thead>
     <tbody>
         {% for row in data %}
-            {% if row[4]!="Complete" %}
+            {% if row["Status"]!="Complete" %}
             <tr>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
+                <td>{{ row["ProductCode"] }}</td>
+                <td>{{ row["OrderDate"] }}</td>
+                <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
+                <td>{{ row["Status"] }}</td>
                 <td>
                     <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
                     <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
@@ -46,12 +46,12 @@
     </thead>
     <tbody>
         {% for row in data %}
-            {% if row[4]=="Complete" %}
+            {% if row["Status"]=="Complete" %}
             <tr>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
+                <td>{{ row["ProductCode"] }}</td>
+                <td>{{ row["OrderDate"] }}</td>
+                <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
+                <td>{{ row["Status"] }}</td>
                 <td>
                     <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
                 </td>
