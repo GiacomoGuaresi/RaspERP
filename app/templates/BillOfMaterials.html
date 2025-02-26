@@ -1,33 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Bill of materials{% endblock %}
+{% block title %}Bill of Materials{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Bill of materials</h2>
+<h2 class="text-center my-3">Bill of Materials</h2>
 <a href="{{ url_for('bom.add_BillOfMaterials') }}" class="btn btn-primary mb-3">Add new</a>
 
-<table id="BillOfMaterialsTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th>Product code</th>
-            <th>Child product code</th>
-            <th>Quantity</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        <tr>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-            <td>{{ row[3] }}</td>
-            <td>
-                <a href="{{ url_for('bom.delete_BillOfMaterials', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="row">
+    {% set grouped_data = {} %}
+    {% for row in data %}
+        {% set product_code = row[1] %}
+        {% if product_code not in grouped_data %}
+            {% set _ = grouped_data.update({product_code: []}) %}
+        {% endif %}
+        {% set _ = grouped_data[product_code].append({'child': row[2], 'quantity': row[3], 'id': row[0]}) %}
+    {% endfor %}
 
-{% include 'datatable_setup.html' %}
+    {% for product_code, items in grouped_data.items() %}
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">{{ product_code }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for item in items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.child }} (Qty: {{ item.quantity }})</span>
+                    <a href="{{ url_for('bom.delete_BillOfMaterials', ProductCode=item.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

@@ -20,12 +20,14 @@ def add_ProductionOrder():
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
 
+        # Inserisce la ProductionOrdere principale
         cursor.execute(
             'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity) VALUES (?, ?, ?)',
             (orderDate, code, quantity)
         )
         inserted_id = cursor.lastrowid
 
+        # Cerca i componenti nella BillOfMaterials
         cursor.execute(
             'SELECT ChildProductCode, Quantity FROM BillOfMaterials WHERE ProductCode = ?',
             (code,)
@@ -38,7 +40,14 @@ def add_ProductionOrder():
             cursor.execute("SELECT * FROM Inventory WHERE ProductCode = ?", (component_code,))
             item = cursor.fetchone()
 
-            used = min(total_quantity, (item[1] - item[2]) if item else 0)
+            if item is not None:
+                available = item[1] - item[2]
+                if available > total_quantity: 
+                    used = total_quantity
+                else:
+                    used = available
+            else: 
+                used = 0
 
             cursor.execute(
                 'INSERT INTO ProductionOrderProgress (OrderID, ProductCode, QuantityRequired, QuantityCompleted) VALUES (?, ?, ?, ?)',
@@ -50,13 +59,20 @@ def add_ProductionOrder():
                     'UPDATE Inventory SET Locked = Locked + ? WHERE ProductCode = ?',
                     (used, component_code,)
                 )
-
+            
             db.commit()
 
+        db.commit()
         return redirect(url_for('production.view_ProductionOrder'))
-    
+        
+    orderDate = request.args.get('date', date.today().isoformat())
+    code = request.args.get('code', '')
+    quantity = request.args.get('quantity', '')
+
     product_codes = query_db('SELECT ProductCode FROM Product')
-    return render_template('ProductionOrder_add.html', OrderDate=date.today().isoformat(), product_codes=product_codes)
+
+    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes)
+
 
 @production_bp.route('/ProductionOrder/delete/<OrderID>')
 def delete_ProductionOrder(OrderID):
