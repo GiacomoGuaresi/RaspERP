@@ -91,7 +91,7 @@ def codereader_Inventory():
                 cursor.execute("""SELECT ProgressID FROM ProductionOrderProgress 
                     JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
 
-                    WHERE Status IS "Planned"
+                    WHERE Status IS "On Going"
                     AND QuantityRequired > QuantityCompleted
                     AND ProductionOrderProgress.ProductCode IS ?""", (Product_code,))
                 neededOrders = cursor.fetchone()

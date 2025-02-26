@@ -84,3 +84,8 @@ def delete_ProductionOrder(OrderID):
 def complete_ProductionOrder(OrderID):
     query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?', ("Complete", OrderID))
     return redirect(url_for('production.view_ProductionOrder'))
+
+@production_bp.route('/ProductionOrder/ongoing/<OrderID>')
+def ongoing_ProductionOrder(OrderID):
+    query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?', ("On Going", OrderID))
+    return redirect(url_for('production.view_ProductionOrder'))
