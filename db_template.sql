@@ -25,7 +25,9 @@ CREATE TABLE "ProductionOrderProgress" (
 
 CREATE TABLE "Product" (
     "ProductCode" TEXT PRIMARY KEY,
-    "Category" TEXT NOT NULL
+    "Category" TEXT NOT NULL,
+    "Metadata" TEXT,
+    "Image" TEXT
 );
 
 CREATE TABLE "Inventory" (

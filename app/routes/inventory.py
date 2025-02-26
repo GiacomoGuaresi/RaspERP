@@ -9,7 +9,7 @@ inventory_bp = Blueprint("inventory", __name__)
 
 @inventory_bp.route('/Inventory')
 def view_Inventory():
-    data = query_db('SELECT * FROM Inventory')
+    data = query_db('SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ')
     return render_template('Inventory.html', data=data)
 
 
@@ -92,7 +92,7 @@ def codereader_Inventory():
                     JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
 
                     WHERE Status IS "On Going"
-                    AND QuantityRequired > QuantityCompleted
+                    AND QuantityRequired > ProductionOrderProgress.QuantityCompleted
                     AND ProductionOrderProgress.ProductCode IS ?""", (Product_code,))
                 neededOrders = cursor.fetchone()
 
@@ -131,7 +131,7 @@ def codereader_Inventory():
 
             # Recupera l'ultimo prodotto aggiornato
             cursor.execute(
-                "SELECT * FROM Inventory WHERE ProductCode = ?", (Product_code,))
+                "SELECT Inventory.*, Product.Image FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode WHERE Inventory.ProductCode = ?", (Product_code,))
             last_Product = cursor.fetchone()
 
     return render_template('Inventory_codereader.html', last_item=last_Product, last_added_count=last_added_count, error=error)

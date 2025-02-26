@@ -8,7 +8,7 @@ production_bp = Blueprint("production", __name__)
 
 @production_bp.route('/ProductionOrder')
 def view_ProductionOrder():
-    data = query_db('SELECT * FROM ProductionOrder')
+    data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
     return render_template('ProductionOrder.html', data=data)
 
 

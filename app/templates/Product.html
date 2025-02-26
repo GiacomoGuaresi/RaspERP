@@ -8,7 +8,8 @@
 <table id="itemTable" class="table table-striped">
     <thead>
         <tr>
-            <th>ProductCode</th>
+            <th>Image</th>
+            <th>Product</th>
             <th>Category</th>
             <th></th>
         </tr>
@@ -16,10 +17,11 @@
     <tbody>
         {% for row in data %}
         <tr>
-            <td>{{ row[0] }}</td>
-            <td>{{ row[1] }}</td>
+            <td><img src="{{ row['image'] }}" width="128" /></td>
+            <td>{{ row["ProductCode"] }}</td>
+            <td>{{ row["Category"] }}</td>
             <td>
-                <a href="{{ url_for('product.delete_Product', code=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+                <a href="{{ url_for('product.delete_Product', code=row['ProductCode']) }}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
         {% endfor %}

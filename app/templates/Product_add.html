@@ -10,7 +10,7 @@
         </div>
         {% endif %}
 
-        <form method="post" class="mt-3">
+        <form method="post" enctype="multipart/form-data" class="mt-3">
             <div class="mb-3">
                 <label for="ProductCode" class="form-label">Code:</label>
                 <input type="text" id="ProductCode" name="ProductCode" list="productCodes" class="form-control" required>
@@ -20,6 +20,7 @@
                     {% endfor %}
                 </datalist>
             </div>
+            
             <div class="mb-3">
                 <label for="Category" class="form-label">Category:</label>
                 <select class="form-select" aria-label="Default select example" id="Category" name="Category" list="categories" class="form-control" required>
@@ -29,6 +30,13 @@
                     <option value="Subassembly">Subassembly</option>
                   </select>
             </div>
+            
+            <div class="mb-3">
+                <label for="ProductImage" class="form-label">Product Image:</label>
+                <input type="file" id="ProductImage" name="ProductImage" class="form-control" accept="image/*">
+            </div>
+
+            <!-- TODO: fare l'upload dell'immagine  -->
             <button type="submit" class="btn btn-primary">Add</button>
             <a href="{{ url_for('product.view_Product') }}" class="btn btn-secondary">Go Back</a>
         </form>

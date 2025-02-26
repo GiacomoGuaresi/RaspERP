@@ -12,13 +12,12 @@ def view_ProductionOrderProgress(OrderID):
                ProductionOrder.OrderID as childOrderId 
         FROM ProductionOrderProgress 
         JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode 
-        LEFT JOIN ProductionOrder 
-        ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID 
+        LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID 
         AND ProductionOrder.ProductCode = ProductionOrderProgress.ProductCode
         WHERE ProductionOrderProgress.OrderID = ?
     """, (OrderID,))
     
-    order = query_db('SELECT * FROM ProductionOrder WHERE OrderID = ?', (OrderID, ), one=True)
+    order = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE OrderID = ?', (OrderID, ), one=True)
     
     return render_template('ProductionOrderProgress.html', data=data, current_date=date.today().isoformat(), order=order)
 

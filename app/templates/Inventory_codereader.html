@@ -40,6 +40,7 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Product Code</th>
                                 <th>Total on hand</th>
                                 <th>New entry</th>
@@ -47,6 +48,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td><img src="{{ last_item.Image }}" width="128" /></td>
                                 <td>{{ last_item.ProductCode }}</td>
                                 <td>{{ last_item.QuantityOnHand }}</td>
                                 <td>{{ last_added_count }}</td>

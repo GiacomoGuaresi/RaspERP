@@ -8,6 +8,7 @@
 <table id="ProductionOrderTable" class="table table-striped">
     <thead>
         <tr>
+            <th></th>
             <th>Product code</th>
             <th>Date</th>
             <th>Quantity</th>
@@ -19,6 +20,7 @@
         {% for row in data %}
             {% if row["Status"]!="Complete" %}
             <tr>
+                <td><img src="{{ row['image'] }}" width="64" /></td>
                 <td>{{ row["ProductCode"] }}</td>
                 <td>{{ row["OrderDate"] }}</td>
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
@@ -37,6 +39,7 @@
 <table id="completeProductionOrderTable" class="table table-striped">
     <thead>
         <tr>
+            <th></th>
             <th>Product code</th>
             <th>Date</th>
             <th>Quantity</th>
@@ -48,6 +51,7 @@
         {% for row in data %}
             {% if row["Status"]=="Complete" %}
             <tr>
+                <td><img src="{{ row['image'] }}" width="64" /></td>
                 <td>{{ row["ProductCode"] }}</td>
                 <td>{{ row["OrderDate"] }}</td>
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
