@@ -2,7 +2,7 @@
 {% block title %}Production Orders{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Active Production orders</h2>
+<h2 class="text-center my-3">Production orders</h2>
 <a href="{{ url_for('production.add_ProductionOrder') }}" class="btn btn-primary mb-3">Add New</a>
 
 <table id="ProductionOrderTable" class="table table-striped">
@@ -18,37 +18,47 @@
     </thead>
     <tbody>
         {% for row in data %}
-            {% if row["Status"]!="Complete" %}
-            <tr>
-                <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-                <td>{{ row["ProductCode"] }}</td>
-                <td>{{ row["OrderDate"] }}</td>
-                <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
-                <td>{{ row["Status"] }}</td>
-                <td>
-                    <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
-                    <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-            {% endif %}
+        {% if row["Status"]!="Complete" %}
+        <tr>
+            <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
+            <td>{{ row["ProductCode"] }}</td>
+            <td>{{ row["OrderDate"] }}</td>
+            <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
+            <td>{{ row["Status"] }}</td>
+            <td>
+                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}"
+                    class="btn btn-info btn-sm">View</a>
+                <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row[0]) }}"
+                    class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>
 
-<h2 class="text-center my-3">Archive</h2>
-<table id="completeProductionOrderTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Product code</th>
-            <th>Date</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
+
+<p class="mt-3">
+    <a class="btn btn-secondary" data-bs-toggle="collapse" href="#collapseArchive" role="button"
+        aria-expanded="false" aria-controls="collapseArchive">
+        Show completed production orders
+    </a>
+</p>
+<div class="collapse mb-3" id="collapseArchive">
+    <h2 class="text-center my-3">Completed production orders</h2>
+    <table id="completeProductionOrderTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Product code</th>
+                <th>Date</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
             {% if row["Status"]=="Complete" %}
             <tr>
                 <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
@@ -57,13 +67,16 @@
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
                 <td>{{ row["Status"] }}</td>
                 <td>
-                    <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
+                    <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}"
+                        class="btn btn-info btn-sm">View</a>
                 </td>
             </tr>
             {% endif %}
-        {% endfor %}
-    </tbody>
-</table>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 
 {% include 'datatable_setup.html' %}
 

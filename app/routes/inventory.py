@@ -9,7 +9,8 @@ inventory_bp = Blueprint("inventory", __name__)
 
 @inventory_bp.route('/Inventory')
 def view_Inventory():
-    data = query_db('SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ')
+    data = query_db(
+        'SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ')
     return render_template('Inventory.html', data=data)
 
 
@@ -92,14 +93,26 @@ def codereader_Inventory():
                     JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
 
                     WHERE Status IS "On Going"
-                    AND QuantityRequired > ProductionOrderProgress.QuantityCompleted
+                    AND ProductionOrderProgress.QuantityCompleted < ProductionOrderProgress.QuantityRequired
                     AND ProductionOrderProgress.ProductCode IS ?""", (Product_code,))
                 neededOrders = cursor.fetchone()
 
-                if (neededOrders != None):
+                if neededOrders:
                     progressId = neededOrders["ProgressID"]
                     cursor.execute(
                         "UPDATE ProductionOrderProgress SET QuantityCompleted = QuantityCompleted + 1 WHERE ProgressID = ?", (progressId,))
+
+                    cursor.execute(
+                        """SELECT OrderID FROM ProductionOrder 
+                        WHERE Status IS "On Going" 
+                        AND ProductionOrder.QuantityCompleted < ProductionOrder.Quantity 
+                        AND ProductCode IS ?""", (Product_code,))
+                    neededOrders = cursor.fetchone()
+                    if neededOrders:
+                        orderId = neededOrders["OrderID"]
+                        cursor.execute(
+                            "UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted + 1 WHERE OrderId = ?", (orderId,))
+
                     cursor.execute(
                         "UPDATE Inventory SET QuantityOnHand = QuantityOnHand + 1, Locked = Locked + 1 WHERE ProductCode = ?", (Product_code,))
                     log_action(
