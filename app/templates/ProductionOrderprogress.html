@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Production Order Details{% endblock %}
 {% block content %}
-    <h1>Production Order Details</h1>
-    <h2>{{ order["ProductCode"] }}</h2>
+    <h2 class="text-center my-3">Production Order Details</h2>
+    <p>Product: {{ order["ProductCode"] }}</p>
     <p>Order date: {{ order["OrderDate"] }}</p>
     <p>Quantity: {{ order["QuantityCompleted"] }}/{{ order["Quantity"] }}</p>
     <p>Status: {{ order["Status"] }}</p>
