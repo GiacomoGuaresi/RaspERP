@@ -20,7 +20,7 @@
         {% for row in data %}
             {% if row["Status"]!="Complete" %}
             <tr>
-                <td><img src="{{ row['image'] }}" width="64" /></td>
+                <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
                 <td>{{ row["ProductCode"] }}</td>
                 <td>{{ row["OrderDate"] }}</td>
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
@@ -51,7 +51,7 @@
         {% for row in data %}
             {% if row["Status"]=="Complete" %}
             <tr>
-                <td><img src="{{ row['image'] }}" width="64" /></td>
+                <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
                 <td>{{ row["ProductCode"] }}</td>
                 <td>{{ row["OrderDate"] }}</td>
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>

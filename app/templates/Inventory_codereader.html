@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,70 +9,99 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        html {
+            background-color: black;
+        }
+
+        body {
+            width: 800px;
+            height: 480px;
+            background-color: #111;
+            overflow: hidden;
+        }
+
+        .alert-floating {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            width: 90%;
+        }
+    </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
+            <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                    <img src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
+                    <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
                     RaspERP
                 </a>
+                Barcode reader interface
             </div>
         </nav>
-        
-    </nav>
 
-    <div class="container mt-4">
-        {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{error}}
+    </nav>
+    {% if error %}
+    <div id="floatingAlert" class="alert alert-danger alert-floating" role="alert">
+        {{ error }}
+    </div>
+    <script>
+        setTimeout(function () {
+            let alert = document.getElementById("floatingAlert");
+            if (alert) {
+                alert.style.opacity = "0"; // Effetto dissolvenza
+                setTimeout(() => alert.remove(), 500); // Rimuove l'alert dopo l'animazione
+            }
+        }, 3000); // Mostra per 3 secondi
+    </script>
+    {% endif %}
+    <div class="container-fluid mt-4 d-flex flex-column justify-content-center align-items-center">
+        {% if last_item %}
+        <div class="card text-center w-100 mb-3">
+            <div class="card-header text-white">
+                Last Element
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Product Code</th>
+                            <th>In inventory</th>
+                            <th>New entry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><img class="rounded" src="{{ last_item.Image }}" width="128" /></td>
+                            <td>{{ last_item.ProductCode }}</td>
+                            <td>
+                                <p class="">On hand: {{ last_item.QuantityOnHand }}</p>
+                                <p class="text-danger">Locked: {{ last_item.Locked }}</p>
+                                <p class="text-success">Available: {{ last_item.QuantityOnHand - last_item.Locked }}</p>
+                            </td>
+
+                            <td>{{ last_added_count }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         {% endif %}
 
-
-        <div class="container-fluid d-flex flex-column justify-content-center align-items-center vh-100">
-            {% if last_item %}
-            <div class="card text-center w-50 mb-3">
-                <div class="card-header bg-primary text-white">
-                    Last Element
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Product Code</th>
-                                <th>Total on hand</th>
-                                <th>New entry</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><img src="{{ last_item.Image }}" width="128" /></td>
-                                <td>{{ last_item.ProductCode }}</td>
-                                <td>{{ last_item.QuantityOnHand }}</td>
-                                <td>{{ last_added_count }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% endif %}
-        
-            <form method="POST" class="container-fluid d-flex flex-column align-items-center">
-                <label for="ProductCode" class="text-white fs-3">Scan the article:</label>
-                <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center fs-1 w-75" autofocus required>
-                <button type="submit" class="btn btn-success btn-lg mt-3" style="display: none;"></button>
-            </form>
-        </div>
+        <form method="POST" class="container-fluid d-flex flex-column align-items-center">
+            <label for="ProductCode" class="text-white">Scan the article:</label>
+            <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center w-100" autofocus
+                required>
+            <button type="submit" class="btn btn-success btn-lg mt-3" style="display: none;"></button>
+        </form>
     </div>
-
-    <footer class="bg-dark text-light text-center py-3 mt-5">
-        <div class="container">
-            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi" class="text-light text-decoration-none" target="_blank">GitHub</a></p>
-            <p class="small mb-0">Built with Flask & Bootstrap 5</p>
-        </div>
-    </footer>
 </body>
+
 </html>
