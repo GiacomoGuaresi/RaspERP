@@ -21,7 +21,7 @@ def add_ProductionOrder():
         orderDate = request.form['OrderDate']
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
-        parentOrderID = int(request.form['ParentOrderID'])
+        parentOrderID = request.form['ParentOrderID']
 
         # Inserisce la ProductionOrder principale
         cursor.execute(
