@@ -30,7 +30,7 @@
                         {% if row[7] %}
                             <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[7]) }}" class="btn btn-primary btn-sm">View Production order</a>
                         {% else %}
-                            <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4])) }}" class="btn btn-primary btn-sm">Add Production order</a>
+                            <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row[2], quantity=(row[3] - row[4]), parentOrderID=order[0]) }}" class="btn btn-primary btn-sm">Add Production order</a>
                         {% endif %}    
                     {% endif %}
                 </td>

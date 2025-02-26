@@ -21,6 +21,7 @@
                 <label for="quantity" class="form-label">Quantity:</label>
                 <input type="number" id="quantity" name="Quantity" value="{{ Quantity }}" min="1" class="form-control" required>
             </div>
+            <input type="hidden" id="parentOrderID" name="ParentOrderID" value="{{ ParentOrderID }}">
             <button type="submit" class="btn btn-primary">Add Production Order</button>
             <a href="{{ url_for('production.view_ProductionOrder') }}" class="btn btn-secondary">Go Back</a>
         </form>

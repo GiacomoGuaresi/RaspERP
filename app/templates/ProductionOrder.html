@@ -12,7 +12,6 @@
             <th>Date</th>
             <th>Quantity</th>
             <th>Status</th>
-            <th>Parent</th>
             <th></th>
         </tr>
     </thead>
@@ -24,7 +23,6 @@
                 <td>{{ row[1] }}</td>
                 <td>{{ row[3] }}</td>
                 <td>{{ row[4] }}</td>
-                <td>{{ row[5] }}</td>
                 <td>
                     <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
                     <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row[0]) }}" class="btn btn-danger btn-sm">Delete</a>
@@ -43,7 +41,6 @@
             <th>Date</th>
             <th>Quantity</th>
             <th>Status</th>
-            <th>Parent</th>
             <th></th>
         </tr>
     </thead>
@@ -55,7 +52,6 @@
                 <td>{{ row[1] }}</td>
                 <td>{{ row[3] }}</td>
                 <td>{{ row[4] }}</td>
-                <td>{{ row[5] }}</td>
                 <td>
                     <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row[0]) }}" class="btn btn-info btn-sm">View</a>
                 </td>

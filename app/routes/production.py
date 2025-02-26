@@ -21,11 +21,12 @@ def add_ProductionOrder():
         orderDate = request.form['OrderDate']
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
+        parentOrderID = int(request.form['ParentOrderID'])
 
         # Inserisce la ProductionOrder principale
         cursor.execute(
-            'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity) VALUES (?, ?, ?)',
-            (orderDate, code, quantity)
+            'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity, ParentOrderID) VALUES (?, ?, ?, ?)',
+            (orderDate, code, quantity, parentOrderID)
         )
         inserted_id = cursor.lastrowid
 
@@ -52,10 +53,11 @@ def add_ProductionOrder():
     orderDate = request.args.get('date', date.today().isoformat())
     code = request.args.get('code', '')
     quantity = request.args.get('quantity', '')
+    parentOrderID = request.args.get('parentOrderID', '')
 
     product_codes = query_db('SELECT ProductCode FROM Product')
 
-    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes)
+    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes, ParentOrderID=parentOrderID)
 
 
 @production_bp.route('/ProductionOrder/delete/<OrderID>')
