@@ -1,2 +1,7 @@
+# Ignora i file compilati Python
 *.pyc
+__pycache__/
+
+# Ignora database SQLite
+*.sqlite3
 *.db
