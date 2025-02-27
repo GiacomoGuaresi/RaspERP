@@ -30,7 +30,23 @@ sudo systemctl start RaspERP
 
 
 echo "Configuring Chromium kiosk mode..."
-# TODO: creare un modo per autostartare chromium in modalità kiosk
+AUTOSTART_DIR="$HOME/.config/autostart"
+KIOSK_SCRIPT="$HOME/RaspERP/kiosk.sh"
+DESKTOP_FILE="$AUTOSTART_DIR/chromium-kiosk.desktop"
+mkdir -p "$AUTOSTART_DIR"
+
+chmod +x "$KIOSK_SCRIPT"
+
+cat <<EOF > "$DESKTOP_FILE"
+[Desktop Entry]
+Type=Application
+Exec=$KIOSK_SCRIPT
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=RaspERP Chromium Kiosk
+Comment=Launch Chromium in kiosk mode at startup for RaspERP interface
+EOF
 
 echo "Setting up SQLite database..."
 
