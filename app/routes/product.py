@@ -12,6 +12,15 @@ def view_Product():
     data = query_db('SELECT * FROM Product')
     return render_template('Product.html', data=data)
 
+@product_bp.route('/Product/<code>', methods=['GET'])
+def view_Product_detail(code):
+    product = query_db('SELECT * FROM Product WHERE ProductCode = ?', (code,), one=True)
+    
+    if not product:
+        return render_template('error.html', message='Product not found'), 404
+
+    return render_template('Product_view.html', product=product)
+
 @product_bp.route('/Product/add', methods=['GET', 'POST'])
 def add_Product():
     if request.method == 'POST':
@@ -44,3 +53,32 @@ def add_Product():
 def delete_Product(code):
     query_db('DELETE FROM Product WHERE ProductCode = ?', (code,))
     return redirect(url_for('product.view_Product'))
+
+@product_bp.route('/Product/edit/<code>', methods=['GET', 'POST'])
+def edit_Product(code):
+    product = query_db('SELECT * FROM Product WHERE ProductCode = ?', (code,), one=True)
+    
+    if not product:
+        return render_template('error.html', message='Product not found'), 404
+
+    if request.method == 'POST':
+        try:
+            new_category = request.form['Category']
+            image_file = request.files.get('ProductImage')
+
+            image_base64 = product['Image']  # Mantieni l'immagine esistente se non ne viene caricata una nuova
+            if image_file and image_file.filename != '':
+                image = Image.open(image_file)
+                image.thumbnail((256, 256))
+                buffered = BytesIO()
+                image.save(buffered, format="JPEG")
+                image_base64 = "data:image/png;base64, " + base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+            query_db('UPDATE Product SET Category = ?, Image = ? WHERE ProductCode = ?',
+                     (new_category, image_base64, code))
+
+            return redirect(url_for('product.view_Product_detail', code=code))
+        except:
+            return render_template('Product_edit.html', message='Error updating product', product=product)
+
+    return render_template('Product_edit.html', product=product)

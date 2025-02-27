@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center my-3">Product Details</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <img class="rounded mb-3" src="{{ product['Image'] }}" width="256" />
+            <h4>Code: {{ product['ProductCode'] }}</h4>
+            <h5>Category: {{ product['Category'] }}</h5>
+            <a href="{{ url_for('product.edit_Product', code=product['ProductCode']) }}" class="btn btn-warning">Edit</a>
+            <a href="{{ url_for('product.view_Product') }}" class="btn btn-secondary">Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

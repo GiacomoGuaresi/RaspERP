@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center my-3">Edit Product</h2>
+
+    {% if message %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Code:</label>
+            <input type="text" class="form-control" value="{{ product['ProductCode'] }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="Category" class="form-label">Category:</label>
+            <select class="form-select" id="Category" name="Category" required>
+                <option value="Product" {% if product['Category'] == "Product" %} selected {% endif %}>Product</option>
+                <option value="Component" {% if product['Category'] == "Component" %} selected {% endif %}>Component</option>
+                <option value="PrintedPart" {% if product['Category'] == "PrintedPart" %} selected {% endif %}>Printed part</option>
+                <option value="Subassembly" {% if product['Category'] == "Subassembly" %} selected {% endif %}>Subassembly</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Current Image:</label><br>
+            <img class="rounded mb-3" src="{{ product['Image'] }}" width="128" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ProductImage" class="form-label">New Product Image:</label>
+            <input type="file" id="ProductImage" name="ProductImage" class="form-control" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{{ url_for('product.view_Product_detail', code=product['ProductCode']) }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
