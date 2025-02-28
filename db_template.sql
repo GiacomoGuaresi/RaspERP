@@ -26,7 +26,7 @@ CREATE TABLE "ProductionOrderProgress" (
 CREATE TABLE "Product" (
     "ProductCode" TEXT PRIMARY KEY,
     "Category" TEXT NOT NULL,
-    "Metadata" TEXT,
+    "Metadata" TEXT NOT NULL DEFAULT "{}",
     "Image" TEXT
 );
 
@@ -45,6 +45,5 @@ CREATE TABLE "Logs" (
 
 CREATE TABLE "Metadata" (
     "MetadataCode" TEXT PRIMARY KEY,
-    "Description" TEXT NOT NULL,
     "Category" TEXT
 );

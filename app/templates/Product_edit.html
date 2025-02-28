@@ -20,10 +20,13 @@
         <div class="mb-3">
             <label for="Category" class="form-label">Category:</label>
             <select class="form-select" id="Category" name="Category" required>
-                <option value="Product" {% if product['Category'] == "Product" %} selected {% endif %}>Product</option>
-                <option value="Component" {% if product['Category'] == "Component" %} selected {% endif %}>Component</option>
-                <option value="PrintedPart" {% if product['Category'] == "PrintedPart" %} selected {% endif %}>Printed part</option>
-                <option value="Subassembly" {% if product['Category'] == "Subassembly" %} selected {% endif %}>Subassembly</option>
+                <option value="Product" {% if product['Category']=="Product" %} selected {% endif %}>Product</option>
+                <option value="Component" {% if product['Category']=="Component" %} selected {% endif %}>Component
+                </option>
+                <option value="PrintedPart" {% if product['Category']=="PrintedPart" %} selected {% endif %}>Printed
+                    part</option>
+                <option value="Subassembly" {% if product['Category']=="Subassembly" %} selected {% endif %}>Subassembly
+                </option>
             </select>
         </div>
 
@@ -37,8 +40,59 @@
             <input type="file" id="ProductImage" name="ProductImage" class="form-control" accept="image/*">
         </div>
 
+        <div class="mb-3">
+            <h4>Metadata</h4>
+            <table class="table table-bordered" id="metadataTable">
+                <thead>
+                    <tr>
+                        <th>Metadata Code</th>
+                        <th>Value</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in metadata.items() %}
+                    <tr>
+                        <td>
+                            <input type="text" name="metadata_keys[]" class="form-control" value="{{ key }}" required>
+                        </td>
+                        <td>
+                            <input type="text" name="metadata_values[]" class="form-control" value="{{ value }}"
+                                required>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary" onclick="addMetadataRow()">Add Metadata</button>
+        </div>
+
         <button type="submit" class="btn btn-success">Save Changes</button>
-        <a href="{{ url_for('product.view_Product_detail', code=product['ProductCode']) }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ url_for('product.view_Product_detail', code=product['ProductCode']) }}"
+            class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+
+
+<script>
+    function addMetadataRow() {
+        let table = document.getElementById("metadataTable").getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `
+            <td><input type="text" name="metadata_keys[]" class="form-control" required></td>
+            <td><input type="text" name="metadata_values[]" class="form-control" required></td>
+            <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button></td>
+        `;
+    }
+
+    function removeRow(button) {
+        let row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+</script>
+
 {% endblock %}

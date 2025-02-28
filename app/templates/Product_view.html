@@ -10,6 +10,27 @@
             <img class="rounded mb-3" src="{{ product['Image'] }}" width="256" />
             <h4>Code: {{ product['ProductCode'] }}</h4>
             <h5>Category: {{ product['Category'] }}</h5>
+
+            {% if metadata %}
+                <h5>Metadata</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in metadata.items() %}
+                        <tr>
+                            <td>{{ key }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
             <a href="{{ url_for('product.edit_Product', code=product['ProductCode']) }}" class="btn btn-warning">Edit</a>
             <a href="{{ url_for('product.view_Product') }}" class="btn btn-secondary">Go Back</a>
         </div>
