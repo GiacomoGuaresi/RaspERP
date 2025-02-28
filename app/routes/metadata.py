@@ -17,16 +17,16 @@ def view_Metadata():
 @metadata_bp.route('/Metadata/add', methods=['GET', 'POST'])
 def add_Metadata():
     if request.method == 'POST':
-        # try:
-        metadata_code = request.form['MetadataCode']
-        category = request.form['Category']
+        try:
+            metadata_code = request.form['MetadataCode']
+            category = request.form['Category']
 
-        # Inserisci nel DB
-        query_db('INSERT INTO Metadata (MetadataCode, Category) VALUES (?, ?, ?)',
-                    (metadata_code, category))
-        return redirect(url_for('metadata.view_Metadata'))
-        # except:
-        #     return render_template('Metadata_add.html', message=f'The metadata {metadata_code} is already present in the database')
+            # Inserisci nel DB
+            query_db('INSERT INTO Metadata (MetadataCode, Category) VALUES (?, ?, ?)',
+                        (metadata_code, category))
+            return redirect(url_for('metadata.view_Metadata'))
+        except:
+            return render_template('Metadata_add.html', message=f'The metadata {metadata_code} is already present in the database')
 
     return render_template('Metadata_add.html')
 
