@@ -9,7 +9,7 @@
                 <input type="text" id="ProductCode" name="ProductCode" list="productCodes" class="form-control" required>
                 <datalist id="productCodes">
                     {% for row in product_codes %}
-                        <option value="{{ row[0] }}">
+                        <option value="{{ row['BillOfMaterialID'] }}">
                     {% endfor %}
                 </datalist>
             </div>
@@ -18,7 +18,7 @@
                 <input type="text" id="ChildProductCode" name="ChildProductCode" list="componentCodes" class="form-control" required>
                 <datalist id="componentCodes">
                     {% for row in product_codes %}
-                        <option value="{{ row[0] }}">
+                        <option value="{{ row['BillOfMaterialID'] }}">
                     {% endfor %}
                 </datalist>
             </div>

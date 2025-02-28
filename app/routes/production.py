@@ -150,7 +150,7 @@ def decrease_ProductionOrder(OrderID):
         'SELECT QuantityCompleted FROM ProductionOrder WHERE OrderID = ?', (OrderID,))
     row = cursor.fetchone()
 
-    if row and row[0] > 0:
+    if row and row["OrderID"] > 0:
         cursor.execute(
             'UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted - 1 WHERE OrderID = ?',
             (OrderID,)

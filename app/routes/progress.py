@@ -53,7 +53,7 @@ def decrease_ProductionOrderProgress(ProgressID):
         'SELECT QuantityCompleted FROM ProductionOrderProgress WHERE ProgressID = ?', (ProgressID,))
     row = cursor.fetchone()
 
-    if row and row[0] > 0:
+    if row and row["ProgressID"] > 0:
         cursor.execute(
             'UPDATE ProductionOrderProgress SET QuantityCompleted = QuantityCompleted - 1 WHERE ProgressID = ?',
             (ProgressID,)

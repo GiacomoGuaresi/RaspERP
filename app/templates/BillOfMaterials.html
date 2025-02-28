@@ -8,11 +8,11 @@
 <div class="row">
     {% set grouped_data = {} %}
     {% for row in data %}
-        {% set product_code = row[1] %}
+        {% set product_code = row['ProductCode'] %}
         {% if product_code not in grouped_data %}
             {% set _ = grouped_data.update({product_code: []}) %}
         {% endif %}
-        {% set _ = grouped_data[product_code].append({'child': row[2], 'quantity': row[3], 'id': row[0]}) %}
+        {% set _ = grouped_data[product_code].append({'child': row['ChildProductCode'], 'quantity': row['Quantity'], 'id': row['BillOfMaterialID']}) %}
     {% endfor %}
 
     {% for product_code, items in grouped_data.items() %}

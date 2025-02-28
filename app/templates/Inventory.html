@@ -19,13 +19,13 @@
         {% for row in data %}
         <tr>
             <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-            <td>{{ row[0] }}</td>
-            <td>{{ row[1] }}</td>
-            <td>{{ row[2] }}</td>
-            <td>{{ row[1]-row[2] }}</td>
+            <td>{{ row['ProductCode'] }}</td>
+            <td>{{ row['QuantityOnHand'] }}</td>
+            <td>{{ row['Locked'] }}</td>
+            <td>{{ row['QuantityOnHand']-row['Locked'] }}</td>
             <td>
-                <a href="{{ url_for('inventory.increase_Inventory', ProductCode=row[0]) }}" class="btn btn-success btn-sm">+</a>
-                <a href="{{ url_for('inventory.decrease_Inventory', ProductCode=row[0]) }}" class="btn btn-danger btn-sm">-</a>
+                <a href="{{ url_for('inventory.increase_Inventory', ProductCode=row['ProductCode']) }}" class="btn btn-success btn-sm">+</a>
+                <a href="{{ url_for('inventory.decrease_Inventory', ProductCode=row['ProductCode']) }}" class="btn btn-danger btn-sm">-</a>
             </td>
         </tr>
         {% endfor %}
