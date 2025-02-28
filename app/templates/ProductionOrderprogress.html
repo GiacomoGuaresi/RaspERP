@@ -38,7 +38,7 @@
         <tr>
             <td>{{ row["ProductCode"] }}</td>
             <td>{{ row["Category"] }}</td>
-            <td>{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }}</td>
+            <td>{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
             <td>
                 <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}"
                     class="btn btn-success btn-sm">+</a>

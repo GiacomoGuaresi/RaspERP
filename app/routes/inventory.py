@@ -33,7 +33,7 @@ def decrease_Inventory(ProductCode):
         'SELECT QuantityOnHand FROM Inventory WHERE ProductCode = ?', (ProductCode,))
     row = cursor.fetchone()
 
-    if row and row["ProductCode"] > 0:
+    if row and row["QuantityOnHand"] > 0:
         cursor.execute(
             'UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1 WHERE ProductCode = ?', (ProductCode,))
         db.commit()

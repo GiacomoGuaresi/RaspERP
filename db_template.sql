@@ -10,7 +10,7 @@ CREATE TABLE "ProductionOrder" (
     "OrderDate" TEXT NOT NULL,
     "ProductCode" TEXT NOT NULL,
     "Quantity" INTEGER NOT NULL DEFAULT 1,
-    "QuantityComplete" INTEGER NOT NULL DEFAULT 0,
+    "QuantityCompleted" INTEGER NOT NULL DEFAULT 0,
     "Status" TEXT NOT NULL DEFAULT 'Planned',
     "ParentOrderID" INTEGER
 );
