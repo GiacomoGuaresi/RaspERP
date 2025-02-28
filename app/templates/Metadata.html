@@ -21,7 +21,7 @@
             <td>{{ row["Description"] }}</td>
             <td>{{ row["Category"] }}</td>
             <td>
-                <a href="{{ url_for('metadata.delete_Metadata', metadataCode=row['MetadataCode']) }}" class="btn btn-danger btn-sm">Delete</a>                
+                <a href="{{ url_for('metadata.delete_Metadata', metadataCode=row['MetadataCode']) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">delete</a>                
             </td>
         </tr>
         {% endfor %}

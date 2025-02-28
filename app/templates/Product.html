@@ -23,7 +23,7 @@
             <td>
                 <a href="{{ url_for('product.view_Product_detail', code=row['ProductCode']) }}" class="btn btn-info btn-sm">View</a>
                 <a href="{{ url_for('product.edit_Product', code=row['ProductCode']) }}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="{{ url_for('product.delete_Product', code=row['ProductCode']) }}" class="btn btn-danger btn-sm">Delete</a>                
+                <a href="{{ url_for('product.delete_Product', code=row['ProductCode']) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">delete</a>                
             </td>
         </tr>
         {% endfor %}

@@ -11,13 +11,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         html {
-            background-color: black;
+            background-color: purple;
+            width: 800px;
+            height: 480px;
+            overflow: hidden;
         }
 
         body {
+            background-color: black;
             width: 800px;
             height: 480px;
-            background-color: #111;
             overflow: hidden;
         }
 
@@ -31,26 +34,145 @@
             transition: opacity 0.5s ease-in-out;
             width: 90%;
         }
-     
-        * {
+
+        /* * {
             cursor: none;
+        } */
+
+        .keypad button {
+            width: 72px;
+            height: 72px;
+            font-size: 24px;
+            margin: 4px;
+        }
+
+        .action-buttons button {
+            width: 100%;
+            height: 80px;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .action {
+            width: 33%;
+        }
+
+        .btn-group {
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
-                    RaspERP
-                </a>
-                Barcode reader interface
-            </div>
-        </nav>
-
+    <nav class="navbar navbar-dark bg-dark py-1">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img class="rounded" src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="32"
+                    height="32">
+                <span class="ms-2">RaspERP</span>
+            </a>
+        </div>
     </nav>
+
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-8 text-center mt-3">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-lg btn-outline-success action">IN</button>
+                    <button class="btn btn-lg btn-outline-warning action">WORK</button>
+                    <button class="btn btn-lg btn-outline-danger action">OUT</button>
+                </div>
+
+                <div class="align-items-center">
+                    {% if last_item %}
+                    <div class="row mt-4">
+                        <div class="col text-end">
+                            <img class="rounded" src="{{ last_item.Image }}" width="128" />
+                        </div>
+                        <div class="col text-start">
+                            <span class="mt-2">Product Code: {{ last_item.ProductCode }}</span><br>
+                            <span>On hand: {{ last_item.QuantityOnHand }}</span><br>
+                            <span class="text-warning">Added: {{ last_added_count }}</span><br><br>
+                            <span class="text-success">Available: {{ last_item.QuantityOnHand -
+                                last_item.Locked}}</span><br>
+                            <span class="text-danger">Locked: {{ last_item.Locked }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="container-fluid mt-2">
+                    <form method="POST" class="d-flex flex-column align-items-center">
+                        <label for="ProductCode" class="text-white">Scan the article:</label>
+                        <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center w-100"
+                            autofocus required>
+                    </form>
+                </div>
+            </div>
+            <div class="col-4 text-center mt-3 keypad">
+                Edit input quantity
+                <div class="d-flex">
+                    <button class="btn btn-secondary">7</button>
+                    <button class="btn btn-secondary">8</button>
+                    <button class="btn btn-secondary">9</button>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-secondary">4</button>
+                    <button class="btn btn-secondary">5</button>
+                    <button class="btn btn-secondary">6</button>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-secondary">1</button>
+                    <button class="btn btn-secondary">2</button>
+                    <button class="btn btn-secondary">3</button>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-danger">&larr;</button>
+                    <button class="btn btn-secondary">0</button>
+                    <button class="btn btn-secondary">SET</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if last_item %}
+    <div class="progress m-4">
+        <div id="progressBar" class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%;">
+            <span id="timeLeft" class="d-block w-100 text-center text-dark fw-bold">60s</span>
+        </div>
+    </div>
+    <script>
+        let interval;
+        let duration = 60; // Tempo in secondi
+        let progressBar = document.getElementById("progressBar");
+        let timeLeftText = document.getElementById("timeLeft");
+
+        function startCountdown() {
+            clearInterval(interval); // Ferma eventuali countdown precedenti
+            let timeLeft = duration;
+            progressBar.style.width = "100%";
+            timeLeftText.textContent = timeLeft + "s";
+
+            interval = setInterval(() => {
+                timeLeft--;
+                let percentage = (timeLeft / duration) * 100;
+                progressBar.style.width = percentage + "%";
+                timeLeftText.textContent = timeLeft + "s"; // Aggiorna i secondi rimanenti
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    window.location.href = "/Inventory/codereader"; // Reindirizzamento alla fine
+                }
+            }, 1000);
+        }
+
+        function resetProgressBar() {
+            startCountdown(); // Riavvia il countdown
+        }
+
+        startCountdown(); // Avvio automatico
+    </script>
+    {% endif %}
     {% if error %}
     <div id="floatingAlert" class="alert alert-danger alert-floating" role="alert">
         {{ error }}
@@ -59,53 +181,12 @@
         setTimeout(function () {
             let alert = document.getElementById("floatingAlert");
             if (alert) {
-                alert.style.opacity = "0"; // Effetto dissolvenza
-                setTimeout(() => alert.remove(), 500); // Rimuove l'alert dopo l'animazione
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
             }
-        }, 3000); // Mostra per 3 secondi
+        }, 3000);
     </script>
     {% endif %}
-    <div class="container-fluid mt-4 d-flex flex-column justify-content-center align-items-center">
-        {% if last_item %}
-        <div class="card text-center w-100 mb-3">
-            <div class="card-header text-white">
-                Last Element
-            </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Product Code</th>
-                            <th>In inventory</th>
-                            <th>New entry</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><img class="rounded" src="{{ last_item.Image }}" width="128" /></td>
-                            <td>{{ last_item.ProductCode }}</td>
-                            <td>
-                                <p class="">On hand: {{ last_item.QuantityOnHand }}</p>
-                                <p class="text-danger">Locked: {{ last_item.Locked }}</p>
-                                <p class="text-success">Available: {{ last_item.QuantityOnHand - last_item.Locked }}</p>
-                            </td>
-
-                            <td>{{ last_added_count }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <form method="POST" class="container-fluid d-flex flex-column align-items-center">
-            <label for="ProductCode" class="text-white">Scan the article:</label>
-            <input type="text" id="ProductCode" name="ProductCode" class="form-control text-center w-100" autofocus
-                required>
-            <button type="submit" class="btn btn-success btn-lg mt-3" style="display: none;"></button>
-        </form>
-    </div>
 </body>
 
 </html>

@@ -25,7 +25,7 @@
                 {% for item in items %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <span>{{ item.child }} (Qty: {{ item.quantity }})</span>
-                    <a href="{{ url_for('bom.delete_BillOfMaterials', ProductCode=item.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="{{ url_for('bom.delete_BillOfMaterials', ProductCode=item.id) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">delete</a>
                 </li>
                 {% endfor %}
             </ul>
