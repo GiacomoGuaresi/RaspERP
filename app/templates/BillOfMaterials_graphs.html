@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Bill of Materials Graph{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center text-light">Bill of Materials Graph</h2>
+    
+    <div class="mb-3">
+        <label for="productCode" class="form-label text-light">Select Product:</label>
+        <select id="productCode" class="form-select">
+            {% for product in data %}
+            <option value="{{ product['ProductCode'] }}">{{ product["ProductCode"] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button class="btn btn-primary w-100 mb-3" onclick="loadGraph()">Load Graph</button>
+
+    <div id="cy" class="bg-dark border border-secondary rounded" style="width: 100%; height: 600px;"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+<script>
+    function loadGraph() {
+        let productCode = document.getElementById("productCode").value;
+
+        fetch(`/BillOfMaterials/graphs/${productCode}`)
+            .then(response => response.json())
+            .then(data => {
+                let elements = [];
+
+                // Aggiungi nodi e archi
+                let nodes = new Set();
+                data.forEach(item => {
+                    if (!nodes.has(item.product)) {
+                        elements.push({ data: { id: item.product, label: item.product } });
+                        nodes.add(item.product);
+                    }
+                    if (!nodes.has(item.child)) {
+                        elements.push({ data: { id: item.child, label: item.child } });
+                        nodes.add(item.child);
+                    }
+                    elements.push({ data: { source: item.product, target: item.child, label: `x${item.quantity}` } });
+                });
+
+                let cy = cytoscape({
+                    container: document.getElementById('cy'),
+                    elements: elements,
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'label': 'data(label)',
+                                'background-color': '#0d6efd',
+                                'color': '#ffffff',
+                                'text-valign': 'center',
+                                'font-size': '14px',
+                                'width': '50px',
+                                'height': '50px'
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'label': 'data(label)',
+                                'width': 2,
+                                'line-color': '#bbb',
+                                'target-arrow-shape': 'triangle',
+                                'target-arrow-color': '#bbb',
+                                'curve-style': 'bezier',
+                                "color":"#fff"
+                            }
+                        }
+                    ],
+                    layout: { name: 'breadthfirst', directed: true }
+                });
+            });
+    }
+</script>
+
+{% endblock %}
