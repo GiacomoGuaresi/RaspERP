@@ -22,7 +22,7 @@ def add_Metadata():
             category = request.form['Category']
 
             # Inserisci nel DB
-            query_db('INSERT INTO Metadata (MetadataCode, Category) VALUES (?, ?, ?)',
+            query_db('INSERT INTO Metadata (MetadataCode, Category) VALUES (?, ?)',
                         (metadata_code, category))
             return redirect(url_for('metadata.view_Metadata'))
         except:
