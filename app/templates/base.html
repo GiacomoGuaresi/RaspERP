@@ -9,6 +9,38 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+    <style>
+        /* Adatta il dropdown di Select2 al tema scuro */
+        .select2-container--bootstrap-5 .select2-selection {
+            background-color: var(--bs-dark);
+            color: var(--bs-light);
+            border: 1px solid var(--bs-gray-600);
+            border-radius: 4px;
+            height: auto;
+            padding: 6px;
+        }
+        .select2-dropdown {
+            background-color: var(--bs-dark);
+            color: var(--bs-light);
+            border: 1px solid var(--bs-gray-600);
+            border-radius: 4px;
+        }
+        .select2-results__option {
+            color: var(--bs-light);
+        }
+        .select2-results__option--highlighted {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        .select2-selection__arrow {
+            color: var(--bs-light);
+        }
+    </style>
+    
 </head>
 
 <body>

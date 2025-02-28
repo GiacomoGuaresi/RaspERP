@@ -6,22 +6,24 @@
         <form method="post" class="mt-3">
             <div class="mb-3">
                 <label for="ProductCode" class="form-label">Product Code:</label>
-                <input type="text" id="ProductCode" name="ProductCode" list="productCodes" class="form-control" required>
-                <datalist id="productCodes">
+                <select id="ProductCode" name="ProductCode" class="form-select" required>
+                    <option value="" disabled selected>Select a product code</option>
                     {% for row in product_codes %}
-                        <option value="{{ row['BillOfMaterialID'] }}">
+                        <option value="{{ row['ProductCode'] }}">{{ row['ProductCode'] }}</option>
                     {% endfor %}
-                </datalist>
+                </select>
             </div>
+            
             <div class="mb-3">
                 <label for="ChildProductCode" class="form-label">Component Code:</label>
-                <input type="text" id="ChildProductCode" name="ChildProductCode" list="componentCodes" class="form-control" required>
-                <datalist id="componentCodes">
+                <select id="ChildProductCode" name="ChildProductCode" class="form-select" required>
+                    <option value="" disabled selected>Select a component code</option>
                     {% for row in product_codes %}
-                        <option value="{{ row['BillOfMaterialID'] }}">
+                        <option value="{{ row['ProductCode'] }}">{{ row['ProductCode'] }}</option>
                     {% endfor %}
-                </datalist>
+                </select>
             </div>
+            
             <div class="mb-3">
                 <label for="Quantity" class="form-label">Quantity:</label>
                 <input type="number" id="Quantity" name="Quantity" min="1" class="form-control" required>
@@ -30,4 +32,14 @@
             <a href="{{ url_for('bom.view_BillOfMaterials') }}" class="btn btn-secondary">Go Back</a>
         </form>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#ProductCode, #ChildProductCode').select2({
+                placeholder: "Select an option",
+                allowClear: true,
+                theme: "bootstrap-5"
+            });
+        });
+    </script>    
 {% endblock %}
