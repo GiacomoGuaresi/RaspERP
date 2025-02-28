@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Metadatas{% endblock %}
+{% block content %}
+
+<h2 class="text-center my-3">Metadatas</h2>
+<a href="{{ url_for('metadata.add_Metadata') }}" class="btn btn-primary mb-3">Add new</a>
+
+<table id="itemTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Metadata Code</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td>{{ row['MetadataCode'] }}</td>
+            <td>{{ row["Description"] }}</td>
+            <td>{{ row["Category"] }}</td>
+            <td>
+                <a href="{{ url_for('metadata.delete_Metadata', metadataCode=row['MetadataCode']) }}" class="btn btn-danger btn-sm">Delete</a>                
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% include 'datatable_setup.html' %}
+
+{% endblock %}

@@ -42,3 +42,9 @@ CREATE TABLE "Logs" (
     "message" TEXT NOT NULL,
     "user" TEXT
 );
+
+CREATE TABLE "Metadata" (
+    "MetadataCode" TEXT PRIMARY KEY,
+    "Description" TEXT NOT NULL,
+    "Category" TEXT
+);

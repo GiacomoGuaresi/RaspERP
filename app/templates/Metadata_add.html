@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Add metadata{% endblock %}
+{% block content %}
+    <div class="container mt-4">
+        <h2 class="text-center my-3">Add Metadata</h2>
+        
+        {% if message %}
+        <div class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="mt-3">
+            <div class="mb-3">
+                <label for="MetadataCode" class="form-label">Code:</label>
+                <input type="text" id="MetadataCode" name="MetadataCode" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description:</label>
+                <input type="text" id="Description" name="Description" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="Category" class="form-label">Category:</label>
+                <select class="form-select" aria-label="Default select example" id="Category" name="Category" list="categories" class="form-control" required>
+                    <option value="Product">Product</option>
+                    <option value="Component">Component</option>
+                    <option value="PrintedPart">Printed part</option>
+                    <option value="Subassembly">Subassembly</option>
+                  </select>
+            </div>
+
+            <!-- TODO: fare l'upload dell'immagine  -->
+            <button type="submit" class="btn btn-primary">Add</button>
+            <a href="{{ url_for('metadata.view_Metadata') }}" class="btn btn-secondary">Go Back</a>
+        </form>
+    </div>
+{% endblock %}
