@@ -1,15 +1,11 @@
 # run.py
-# from app import create_app
-
-# app = create_app()
-
-# if __name__ == "__main__":
-#     app.run(host='0.0.0.0', port=80)
-
-# run.py
+import sys
 from app import create_app
 
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if len(sys.argv) >= 2 and sys.argv[1] == "--DEBUG":
+        app.run(debug=True)
+    else: 
+        app.run(host='0.0.0.0', port=80)
