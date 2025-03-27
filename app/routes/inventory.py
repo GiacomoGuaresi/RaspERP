@@ -9,37 +9,96 @@ inventory_bp = Blueprint("inventory", __name__)
 
 @inventory_bp.route('/Inventory')
 def view_Inventory():
+    category = request.args.get('category', '')
+    search = request.args.get('search', '')
+    error = request.args.get('error','')
     data = query_db(
-        'SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ')
-    return render_template('Inventory.html', data=data)
+        'SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ORDER BY Inventory.ProductCode ASC')
+    return render_template('Inventory.html', data=data, selected_category=category, search_text=search, error=error)
 
 
 @inventory_bp.route('/Inventory/increase/<ProductCode>')
 def increase_Inventory(ProductCode):
+    category = request.args.get('category', '')
+    search = request.args.get('search', '')
     db = get_db()
     cursor = db.cursor()
-    cursor.execute(
-        'UPDATE Inventory SET QuantityOnHand = QuantityOnHand + 1 WHERE ProductCode = ?', (ProductCode,))
+    
+    cursor.execute("""
+        SELECT ProgressID FROM ProductionOrderProgress 
+        JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
+        WHERE Status = "On Going"
+        AND ProductionOrderProgress.QuantityCompleted < ProductionOrderProgress.QuantityRequired
+        AND ProductionOrderProgress.ProductCode = ?""", (ProductCode,))
+    neededOrders = cursor.fetchone()
+    
+    if neededOrders:
+        progressId = neededOrders["ProgressID"]
+        cursor.execute(
+            "UPDATE ProductionOrderProgress SET QuantityCompleted = QuantityCompleted + 1 WHERE ProgressID = ?", (progressId,))
+        
+        cursor.execute("""
+            SELECT OrderID FROM ProductionOrder 
+            WHERE Status = "On Going" 
+            AND ProductionOrder.QuantityCompleted < ProductionOrder.Quantity 
+            AND ProductCode = ?""", (ProductCode,))
+        neededOrders = cursor.fetchone()
+        
+        if neededOrders:
+            orderId = neededOrders["OrderID"]
+            cursor.execute(
+                "UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted + 1 WHERE OrderID = ?", (orderId,))
+        
+        cursor.execute(
+            "UPDATE Inventory SET QuantityOnHand = QuantityOnHand + 1, Locked = Locked + 1 WHERE ProductCode = ?", (ProductCode,))
+        log_action(cursor, f"Added 1 unit of {ProductCode} and used for production order progress {progressId}", "WEB")
+    else:
+        cursor.execute(
+            "UPDATE Inventory SET QuantityOnHand = QuantityOnHand + 1 WHERE ProductCode = ?", (ProductCode,))
+        log_action(cursor, f"Added 1 unit of {ProductCode}", "WEB")
+    
     db.commit()
-    return redirect(url_for('inventory.view_Inventory'))
+    return redirect(url_for('inventory.view_Inventory', category=category, search=search))
 
 
 @inventory_bp.route('/Inventory/decrease/<ProductCode>')
 def decrease_Inventory(ProductCode):
+    category = request.args.get('category', '')
+    search = request.args.get('search', '')
     db = get_db()
     cursor = db.cursor()
-
-    cursor.execute(
-        'SELECT QuantityOnHand FROM Inventory WHERE ProductCode = ?', (ProductCode,))
+    error = ""
+    cursor.execute("SELECT QuantityOnHand, Locked FROM Inventory WHERE ProductCode = ?", (ProductCode,))
     row = cursor.fetchone()
+    
+    if row and (row["QuantityOnHand"] - row["Locked"]) > 0:
+        cursor.execute("UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1 WHERE ProductCode = ?", (ProductCode,))
+        log_action(cursor, f"Removed 1 unit of {ProductCode}", "WEB")
+    else:
+        error = "Unable to extract the part from the stock, unavailable or stuck"
+    
+    db.commit()
+    return redirect(url_for('inventory.view_Inventory', category=category, search=search, error=error))
 
-    if row and row["QuantityOnHand"] > 0:
-        cursor.execute(
-            'UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1 WHERE ProductCode = ?', (ProductCode,))
-        db.commit()
 
-    return redirect(url_for('inventory.view_Inventory'))
-
+@inventory_bp.route('/Inventory/work/<ProductCode>')
+def work_Inventory(ProductCode):
+    category = request.args.get('category', '')
+    search = request.args.get('search', '')
+    db = get_db()
+    cursor = db.cursor()
+    error = ""
+    cursor.execute("SELECT QuantityOnHand, Locked FROM Inventory WHERE ProductCode = ?", (ProductCode,))
+    row = cursor.fetchone()
+    
+    if row and row["Locked"] > 0:
+        cursor.execute("UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1, Locked = Locked - 1 WHERE ProductCode = ?", (ProductCode,))
+        log_action(cursor, f"Working 1 unit of {ProductCode}", "WEB")
+    else:
+        error = "Unable to extract the part from the stock, unavailable or stuck"
+    
+    db.commit()
+    return redirect(url_for('inventory.view_Inventory', category=category, search=search, error=error))
 
 # Variabili temporanee per l'ultimo codice e il suo conteggio (persi al refresh)
 last_scanned = None
@@ -56,11 +115,13 @@ def codereader_Inventory():
     cursor = db.cursor()
     last_Product = None
     error = None
-    action = None    
+    action = None
 
     if request.method == 'POST':
-        Product_code = request.form.get('ProductCode', '').strip().upper()  # Case insensitive
-        action = request.form.get('action', '').strip().upper()  # Case insensitive
+        Product_code = request.form.get(
+            'ProductCode', '').strip().upper()  # Case insensitive
+        action = request.form.get(
+            'action', '').strip().upper()  # Case insensitive
 
         # TODO: call the in or out or work function X time
         # Controlla se è un modificatore (MOD>Xn)
@@ -124,7 +185,7 @@ def codereader_Inventory():
         elif action == "OUT":
             if row and (row["QuantityOnHand"] - row["Locked"]) > 0:
                 cursor.execute("UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1 WHERE ProductCode = ?",
-                                (Product_code,))
+                               (Product_code,))
                 log_action(
                     cursor, f"Removed 1 unit of {Product_code}", "BARCODEREADER")
             else:
@@ -133,7 +194,7 @@ def codereader_Inventory():
         elif action == "WORK":
             if row and row["Locked"] > 0:
                 cursor.execute("UPDATE Inventory SET QuantityOnHand = QuantityOnHand - 1, Locked = Locked - 1 WHERE ProductCode = ?",
-                                (Product_code,))
+                               (Product_code,))
                 log_action(
                     cursor, f"Working 1 unit of {Product_code}", "BARCODEREADER")
             else:

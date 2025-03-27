@@ -2,36 +2,140 @@
 {% block title %}Inventory{% endblock %}
 {% block content %}
 
-<h2 class="text-center my-3">Inventory</h2>
+<!-- Sticky Search Bar -->
+<div class="sticky-top bg-dark py-2 z-3">
+    <h2 class="text-center my-3">Inventory</h2>
+    <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2 mb-3">
+        <div class="input-group">
+            <span class="input-group-text" id="inputGroup-sizing-default">
+                <span class="mdi mdi-archive-search"></span>
+            </span>
+            <select class="form-select" style="max-width: 180px;" id="category-select">
+                <option {% if selected_category=='' or selected_category=='All Types' %}selected{% endif %}>All Types</option>
+                <option value="Product" {% if selected_category=='Product' %}selected{% endif %}>Product</option>
+                <option value="Component" {% if selected_category=='Component' %}selected{% endif %}>Component</option>
+                <option value="PrintedPart" {% if selected_category=='PrintedPart' %}selected{% endif %}>Printed part</option>
+                <option value="Subassembly" {% if selected_category=='Subassembly' %}selected{% endif %}>Subassembly</option>
+            </select>
 
-<table id="InventoryTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>ProductCode</th>
-            <th>On hand</th>
-            <th>Blocked</th>
-            <th>Available</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        <tr>
-            <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-            <td>{{ row['ProductCode'] }}</td>
-            <td>{{ row['QuantityOnHand'] }}</td>
-            <td>{{ row['Locked'] }}</td>
-            <td>{{ row['QuantityOnHand']-row['Locked'] }}</td>
-            <td>
-                <a href="{{ url_for('inventory.increase_Inventory', ProductCode=row['ProductCode']) }}" class="btn btn-success btn-sm">+</a>
-                <a href="{{ url_for('inventory.decrease_Inventory', ProductCode=row['ProductCode']) }}" class="btn btn-danger btn-sm">-</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            <input type="text" class="form-control" id="search-text" placeholder="Search..." value="{{ search_text }}">
+        </div>
+    </div>
+</div>
 
-{% include 'datatable_setup.html' %}
+<!-- Cards Grid -->
+<div class="d-flex flex-wrap justify-content-center">
+    {% for row in data %}
+    <div class="card m-2 text-center" style="width: 9rem;">
+        <img class="card-img-top" src="{{ row['image'] }}" />
+        <div class="card-body">
+            <h6 class="card-title">{{ row['ProductCode'] }}</h6>
+            <p class="card-text small">
+                <span class="Category">{{row['Category']}}</span><br>
+                <span class="text-warning"><span class="mdi mdi-archive-lock-outline"></span> {{ row['Locked'] }}</span>
+                <span class="text-success"><span class="mdi mdi-archive-outline"></span> {{ row['QuantityOnHand'] - row['Locked'] }}</span>
+            </p>
+            <div class="btn-group" role="group">
+                <a class="btn btn-success btn-sm update-href" data-base-href="{{ url_for('inventory.increase_Inventory', ProductCode=row['ProductCode']) }}" title="Increase">
+                    <span class="mdi mdi-archive-plus"></span>
+                </a>
+                <a class="btn btn-warning btn-sm update-href" data-base-href="{{ url_for('inventory.work_Inventory', ProductCode=row['ProductCode']) }}" title="Edit">
+                    <span class="mdi mdi-archive-cog"></span>
+                </a>
+                <a class="btn btn-danger btn-sm update-href" data-base-href="{{ url_for('inventory.decrease_Inventory', ProductCode=row['ProductCode']) }}" title="Decrease">
+                    <span class="mdi mdi-archive-minus"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    $(document).ready(function () {
+        function filterCards() {
+            var selectedCategory = $('#category-select').val().toLowerCase();
+            var searchTerm = $('#search-text').val().toLowerCase();
+
+            $('.card').each(function () {
+                var cardTitle = $(this).find('.card-title').text().toLowerCase();
+                var cardCategory = $(this).find('.Category').text().toLowerCase();
+
+                var matchesCategory = (selectedCategory === "all types" || cardCategory === selectedCategory);
+                var matchesSearch = cardTitle.includes(searchTerm);
+
+                if (matchesCategory && matchesSearch) {
+                    $(this).fadeIn("fast");
+                } else {
+                    $(this).fadeOut("fast");
+                }
+            });
+
+            updateButtonHrefs(); // aggiorna anche i link dei pulsanti
+        }
+
+        function updateButtonHrefs() {
+            var currentCategory = encodeURIComponent($('#category-select').val());
+            var currentSearch = encodeURIComponent($('#search-text').val());
+
+            $('.update-href').each(function () {
+                var baseHref = $(this).data('base-href');
+                var newHref = baseHref + '?category=' + currentCategory + '&search=' + currentSearch;
+                $(this).attr('href', newHref);
+            });
+        }
+
+        // Aggiorna su input/select
+        $('#category-select').on('change', filterCards);
+        $('#search-text').on('input', filterCards);
+
+        updateButtonHrefs();
+
+        $('#category-select').trigger('change');
+        $('#search-text').trigger('input');
+    });
+
+    function showFloatingAlert(message, type = "danger") {
+        const toastHTML = `
+        <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>`;
+
+        const toast = $(toastHTML);
+        $("body").append(toast);
+
+        // Aggiungi la posizione fissa in alto a destra
+        toast.css({
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 1050  // Assicurati che il toast appaia sopra altri elementi
+        });
+
+        // Inizializzare il toast con Bootstrap
+        const toastElement = new bootstrap.Toast(toast[0]);
+
+        // Mostrare il toast
+        toastElement.show();
+
+        // Rimuovere il toast dopo che è scomparso
+        toast.on('hidden.bs.toast', function () {
+            $(this).remove();
+        });
+    }
+</script>
+
+{% if error %}
+<script>
+    $(document).ready(function () {
+        showFloatingAlert("{{ error }}");
+    });
+</script>
+{% endif %}
 
 {% endblock %}
