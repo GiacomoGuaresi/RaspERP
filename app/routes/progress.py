@@ -9,7 +9,7 @@ progress_bp = Blueprint("progress", __name__)
 def view_ProductionOrderProgress(OrderID):
     data = query_db("""
         SELECT ProductionOrderProgress.*, Product.*, 
-               ProductionOrder.OrderID as childOrderId 
+               ProductionOrder.OrderID as childOrderId, ProductionOrder.AssignedUser
         FROM ProductionOrderProgress 
         JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode 
         LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID 

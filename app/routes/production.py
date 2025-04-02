@@ -9,7 +9,7 @@ production_bp = Blueprint("production", __name__)
 @production_bp.route('/ProductionOrder')
 def view_ProductionOrder():
     if get_current_user() is not None and get_current_user() != "":
-        data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE AssignedUser = ?', (get_current_user(),))
+        data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE (AssignedUser = ? OR AssignedUser = "")', (get_current_user(),))
     else:
         data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
     return render_template('ProductionOrder.html', data=data)

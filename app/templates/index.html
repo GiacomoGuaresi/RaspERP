@@ -14,8 +14,20 @@
                     <div class="display-4 text-primary mb-2">
                         <i class="mdi mdi-package-variant-closed"></i>
                     </div>
-                    <h2 class="card-title mb-3">{{ productionOrder }}</h2>
-                    <p class="card-text text-muted">Production Order</p>
+                    <h2 class="card-title mb-3">{{ productProductionOrder }}</h2>
+                    <p class="card-text text-muted">Product Production Order</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 text-center shadow">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-2">
+                        <i class="mdi mdi-cog"></i>
+                    </div>
+                    <h2 class="card-title mb-3">{{ subassemblyProductionOrder }}</h2>
+                    <p class="card-text text-muted">Subassembly Production Order</p>
                 </div>
             </div>
         </div>
@@ -40,18 +52,6 @@
                     </div>
                     <h2 class="card-title mb-3">{{ missingPartsComponent }}</h2>
                     <p class="card-text text-muted">Component missing</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card h-100 text-center shadow">
-                <div class="card-body">
-                    <div class="display-4 text-danger mb-2">
-                        <i class="mdi mdi-cogs"></i>
-                    </div>
-                    <h2 class="card-title mb-3">{{ missingPartsSubassembly }}</h2>
-                    <p class="card-text text-muted">Subassembly missing</p>
                 </div>
             </div>
         </div>

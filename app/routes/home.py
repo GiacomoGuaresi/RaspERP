@@ -8,14 +8,24 @@ home_bp = Blueprint("home", __name__)
 
 @home_bp.route("/")
 def index():
-    # ProductionOrder count
+    # Product ProductionOrder count
     data = {}
     if get_current_user() is not None and get_current_user() != "":
-        data = query_db('SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE AssignedUser = ?', (get_current_user(),))
+        data = query_db('SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE Status = "On Going" AND Category="Product" AND (AssignedUser = ? OR AssignedUser = "")', (get_current_user(),))
     else:
         data = query_db(
-            'SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
-    productionOrder = data[0]["productionOrderNumber"]
+            'SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE Status = "On Going" AND Category="Product"')
+    productProductionOrder = data[0]["productionOrderNumber"]
+
+    # Subassembly ProductionOrder count
+    data = {}
+    if get_current_user() is not None and get_current_user() != "":
+        data = query_db('SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE Status = "On Going" AND Category="Subassembly" AND (AssignedUser = ? OR AssignedUser = "")', (get_current_user(),))
+    else:
+        data = query_db(
+            'SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE Status = "On Going" AND Category="Subassembly"')
+    subassemblyProductionOrder = data[0]["productionOrderNumber"]
+
     def get_missing_parts_by_category(category):
         try:
             result = query_db(f"""
@@ -45,7 +55,7 @@ def index():
     missingPartsSubassembly = get_missing_parts_by_category("Subassembly")
     print(missingPartsSubassembly)
 
-    return render_template("index.html", productionOrder=productionOrder, missingPartsPrintedPart=missingPartsPrintedPart, missingPartsComponent=missingPartsComponent, missingPartsSubassembly=missingPartsSubassembly)
+    return render_template("index.html", productProductionOrder=productProductionOrder, subassemblyProductionOrder=subassemblyProductionOrder, missingPartsPrintedPart=missingPartsPrintedPart, missingPartsComponent=missingPartsComponent, missingPartsSubassembly=missingPartsSubassembly)
 
 
 @home_bp.route("/logs")
