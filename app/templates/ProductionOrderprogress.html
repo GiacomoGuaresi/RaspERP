@@ -3,6 +3,23 @@
 {% block content %}
 <h2 class="text-center my-3">Production Order Details</h2>
 <div class="container">
+    <div class="container d-flex justify-content-center align-items-center mb-3">
+        <div class="progresses">
+            <div class="steps {% if order['Status'] in ['On Going', 'Complete', 'Planned'] %}steps-complete{% endif %}">
+                <span><i class="mdi mdi-clipboard-clock"></i></span>
+            </div>
+
+            <span class="line {% if order['Status'] in ['On Going', 'Complete'] %}line-complete{% endif %}"></span>
+            <div class="steps {% if order['Status'] in ['On Going', 'Complete'] %}steps-complete{% endif %}">
+                <span><i class="mdi mdi-play"></i></span>
+            </div>
+
+            <span class="line {% if order['Status'] == 'Complete' %}line-complete{% endif %}"></span>
+            <div class="steps {% if order['Status'] == 'Complete' %}steps-complete{% endif %}">
+                <span><i class="mdi mdi-check"></i></span>
+            </div>
+        </div>
+    </div>    
     <div class="row mb-3">
         <div class="col-2">
             <img class="rounded" src="{{ order['image'] }}" width="100%" />
@@ -12,18 +29,13 @@
             <p>Order date: {{ order["OrderDate"] }}</p>
             <p>Quantity: {{ order["QuantityCompleted"] }}/{{ order["Quantity"] }}</p>
             <p>Status: {{ order["Status"] }}</p>
-
         </div>
     </div>
 </div>
-<a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}"
-    class="btn btn-success mb-3">+</a>
-<a href="{{ url_for('production.decrease_ProductionOrder', OrderID=order['OrderID']) }}"
-    class="btn btn-danger mb-3">-</a>
-<a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">
-    Mark as Complete</a>
-<a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">
-    Mark as On going</a>
+<a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-success mb-3">+</a>
+<a href="{{ url_for('production.decrease_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-danger mb-3">-</a>
+<a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as On going</a>
+<a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as Complete</a>
 <table id="ProductionOrderTable" class="table table-striped">
     <thead>
         <tr>
@@ -40,17 +52,13 @@
             <td>{{ row["Category"] }}</td>
             <td>{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
             <td>
-                <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}"
-                    class="btn btn-success btn-sm">+</a>
-                <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}"
-                    class="btn btn-danger btn-sm">-</a>
+                <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-success btn-sm">+</a>
+                <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-danger btn-sm">-</a>
                 {% if row['Category'] == "Subassembly" %}
                 {% if row['childOrderID'] %}
-                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}"
-                    class="btn btn-primary btn-sm">View Production order</a>
+                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}" class="btn btn-primary btn-sm">View Production order</a>
                 {% else %}
-                <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID']) }}"
-                    class="btn btn-primary btn-sm">Add Production order</a>
+                <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID']) }}" class="btn btn-primary btn-sm">Add Production order</a>
                 {% endif %}
                 {% endif %}
             </td>
