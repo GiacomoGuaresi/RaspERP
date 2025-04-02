@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from app.utils import query_db, get_db, log_action
 import re
 import datetime
+from collections import defaultdict
 
 inventory_bp = Blueprint("inventory", __name__)
 
@@ -16,6 +17,36 @@ def view_Inventory():
         'SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ORDER BY Inventory.ProductCode ASC')
     return render_template('Inventory.html', data=data, selected_category=category, search_text=search, error=error)
 
+@inventory_bp.route('/Inventory/missingParts')
+def missingParts_Inventory():
+    ordersOnGoing = query_db("""SELECT ProductionOrderProgress.*, Product.Category, ProductionOrder.ProductCode as OrderProductCode 
+    FROM ProductionOrderProgress
+    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
+    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+    WHERE Status = "On Going"
+    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
+
+    ordersPlanned = query_db("""SELECT ProductionOrderProgress.*, Product.Category, Product.Image, ProductionOrder.ProductCode as OrderProductCode 
+    FROM ProductionOrderProgress
+    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
+    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+    WHERE Status = "Planned"
+    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
+
+    # Raggruppa ordersOnGoing per OrderProductCode
+    grouped_orders_ongoing = defaultdict(list)
+    for row in ordersOnGoing:
+        grouped_orders_ongoing[row["OrderProductCode"]].append(row)
+
+    # Raggruppa ordersPlanned per OrderProductCode
+    grouped_orders_planned = defaultdict(list)
+    for row in ordersPlanned:
+        grouped_orders_planned[row["OrderProductCode"]].append(row)
+
+    return render_template("inventory_missingParts.html", grouped_orders_ongoing=grouped_orders_ongoing, grouped_orders_planned=grouped_orders_planned)
+    
+    
+    
 
 @inventory_bp.route('/Inventory/increase/<ProductCode>')
 def increase_Inventory(ProductCode):

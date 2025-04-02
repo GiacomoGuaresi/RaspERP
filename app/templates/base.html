@@ -32,7 +32,15 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.view_Inventory') }}">Inventory</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Inventory
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{{ url_for('inventory.view_Inventory') }}">View inventory</a></li>
+                          <li><a class="dropdown-item" href="{{ url_for('inventory.missingParts_Inventory') }}">Missing parts</a></li>
+                        </ul>
+                      </li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of materials</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>

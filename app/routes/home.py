@@ -1,6 +1,6 @@
 # app/routes/home.py
 from flask import Blueprint, render_template, jsonify, g
-from app.utils import query_db
+from app.utils import query_db, get_current_user
 from collections import defaultdict
 
 home_bp = Blueprint("home", __name__)
@@ -8,32 +8,16 @@ home_bp = Blueprint("home", __name__)
 
 @home_bp.route("/")
 def index():
+    data = {}
 
-    ordersOnGoing = query_db("""SELECT ProductionOrderProgress.*, Product.Category, ProductionOrder.ProductCode as OrderProductCode 
-    FROM ProductionOrderProgress
-    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
-    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-    WHERE Status = "On Going"
-    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
+    if get_current_user() is not None and get_current_user() != "":
+        data = query_db('SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE AssignedUser = ?', (get_current_user(),))
+    else:
+        data = query_db('SELECT count(1) as productionOrderNumber FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
+    
+    productionOrder = data[0]["productionOrderNumber"]
 
-    ordersPlanned = query_db("""SELECT ProductionOrderProgress.*, Product.Category, Product.Image, ProductionOrder.ProductCode as OrderProductCode 
-    FROM ProductionOrderProgress
-    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
-    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-    WHERE Status = "Planned"
-    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
-
-    # Raggruppa ordersOnGoing per OrderProductCode
-    grouped_orders_ongoing = defaultdict(list)
-    for row in ordersOnGoing:
-        grouped_orders_ongoing[row["OrderProductCode"]].append(row)
-
-    # Raggruppa ordersPlanned per OrderProductCode
-    grouped_orders_planned = defaultdict(list)
-    for row in ordersPlanned:
-        grouped_orders_planned[row["OrderProductCode"]].append(row)
-
-    return render_template("index.html", grouped_orders_ongoing=grouped_orders_ongoing, grouped_orders_planned=grouped_orders_planned)
+    return render_template("index.html", productionOrder=productionOrder)
 
 
 @home_bp.route("/logs")

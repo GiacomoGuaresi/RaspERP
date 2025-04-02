@@ -6,124 +6,21 @@
     <h1 class="text-center">Welcome to RaspERP</h1>
     <p class="text-muted text-center">Manage your warehouse and orders easily.</p>
 </div>
-<div class="container-fluid text-center">
-    <div class="row">
-        <div class="col-12 col-lg-6">
-            <h3 class="mb-3">Missing parts on Current Orders</h3>
-
-            {% for order_id, items in grouped_orders_ongoing.items() %}
-            {% set categories = items | map(attribute='Category') | list %}
-            <div class="mb-3">
-                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder{{ loop.index }}"
-                    aria-expanded="false" aria-controls="collapseOrder{{ loop.index }}">
-                    <span>Order ID: {{ order_id }}</span>
-                    <span>
-                        {% if 'Product' in categories %}
-                        <i class="mdi mdi-package-variant-closed me-1" title="Product"></i>
-                        {% endif %}
-                        {% if 'Component' in categories %}
-                        <i class="mdi mdi-chip me-1" title="Component"></i>
-                        {% endif %}
-                        {% if 'PrintedPart' in categories %}
-                        <i class="mdi mdi-printer-3d me-1" title="Printed Part"></i>
-                        {% endif %}
-                        {% if 'Subassembly' in categories %}
-                        <i class="mdi mdi-cogs me-1" title="Subassembly"></i>
-                        {% endif %}
-                    </span>
-                </button>
-
-                <div class="collapse mt-2" id="collapseOrder{{ loop.index }}">
-                    <div class="card card-body">
-                        <table class="table table-striped mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Missing</th>
-                                    <th>Category</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in items %}
-                                <tr>
-                                    <td>{{ row["ProductCode"] }}</td>
-                                    <td>{{ row["QuantityRequired"] - row["QuantityCompleted"] }}</td>
-                                    <td>{{ row["Category"] }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+<div class="container py-5">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <div class="col">
+            <div class="card h-100 text-center shadow">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-2">
+                        <i class="mdi mdi-package-variant-closed"></i>
                     </div>
+                    <h2 class="card-title mb-3">{{ productionOrder }}</h2>
+                    <p class="card-text text-muted">Production Order</p>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-
-        <div class="col-12 col-lg-6">
-            <h3 class="mb-3">Missing parts on Planned Orders</h3>
-
-            {% for order_product_code, items in grouped_orders_planned.items() %}
-            {% set categories = items | map(attribute='Category') | list %}
-            <div class="mb-3">
-                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanned{{ loop.index }}"
-                    aria-expanded="false" aria-controls="collapsePlanned{{ loop.index }}">
-                    <span>Order ID: {{ order_id }}</span>
-                    <span>
-                        {% if 'Product' in categories %}
-                        <i class="mdi mdi-package-variant-closed me-1" title="Product"></i>
-                        {% endif %}
-                        {% if 'Component' in categories %}
-                        <i class="mdi mdi-chip me-1" title="Component"></i>
-                        {% endif %}
-                        {% if 'PrintedPart' in categories %}
-                        <i class="mdi mdi-printer-3d me-1" title="Printed Part"></i>
-                        {% endif %}
-                        {% if 'Subassembly' in categories %}
-                        <i class="mdi mdi-cogs me-1" title="Subassembly"></i>
-                        {% endif %}
-                    </span>
-                </button>
-                <div class="collapse mt-2" id="collapsePlanned{{ loop.index }}">
-                    <div class="card card-body">
-                        <table class="table table-striped mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Missing</th>
-                                    <th>Category</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in items %}
-                                <tr>
-                                    <td>{{ row["ProductCode"] }}</td>
-                                    <td>{{ row["QuantityRequired"] - row["QuantityCompleted"] }}</td>
-                                    <td>{{ row["Category"] }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col text-start">
-            <h4>Legenda</h4>
-            <ul>
-                <li><i class="mdi mdi-package-variant-closed me-1" title="Product"></i> Product</li>
-                <li><i class="mdi mdi-chip me-1" title="Component"></i> Component</li>
-                <li><i class="mdi mdi-printer-3d me-1" title="Printed Part"></i> Printed Part</li>
-                <li><i class="mdi mdi-cogs me-1" title="Subassembly"></i> Subassembly</li>
-            </ul>
         </div>
     </div>
 </div>
-
 {% include 'datatable_setup.html' %}
 
 {% endblock %}
