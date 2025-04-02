@@ -13,6 +13,7 @@
             <th>Date</th>
             <th>Quantity</th>
             <th>Status</th>
+            <th>Assigend to</th>
             <th></th>
         </tr>
     </thead>
@@ -25,6 +26,7 @@
             <td>{{ row["OrderDate"] }}</td>
             <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
             <td>{{ row["Status"] }}</td>
+            <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
             <td>
                 <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}"
                     class="btn btn-info btn-sm">View</a>
@@ -58,6 +60,7 @@
                 <th>Date</th>
                 <th>Quantity</th>
                 <th>Status</th>
+                <th>Assigend to</th>
                 <th></th>
             </tr>
         </thead>
@@ -70,6 +73,7 @@
                 <td>{{ row["OrderDate"] }}</td>
                 <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
                 <td>{{ row["Status"] }}</td>
+                <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
                 <td>
                     <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}"
                         class="btn btn-info btn-sm">View</a>

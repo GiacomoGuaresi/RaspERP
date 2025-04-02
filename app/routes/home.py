@@ -1,5 +1,5 @@
 # app/routes/home.py
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, g
 from app.utils import query_db
 from collections import defaultdict
 
@@ -41,3 +41,8 @@ def logs():
     data = query_db('SELECT * FROM Logs ORDER BY timestamp DESC LIMIT 50')
     logs = [dict(row) for row in data]
     return jsonify(logs)
+
+
+@home_bp.route("/whoami")
+def whoami():
+    return jsonify({"selected_user": g.selected_user})

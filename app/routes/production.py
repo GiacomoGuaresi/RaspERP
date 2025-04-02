@@ -1,6 +1,6 @@
 # app/routes/production.py
-from flask import Blueprint, render_template, request, redirect, url_for
-from app.utils import query_db, get_db
+from flask import Blueprint, render_template, request, redirect, url_for, g
+from app.utils import query_db, get_db, get_current_user
 from datetime import date
 
 production_bp = Blueprint("production", __name__)
@@ -8,7 +8,10 @@ production_bp = Blueprint("production", __name__)
 
 @production_bp.route('/ProductionOrder')
 def view_ProductionOrder():
-    data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
+    if get_current_user() is not None and get_current_user() != "":
+        data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE AssignedUser = ?', (get_current_user(),))
+    else:
+        data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
     return render_template('ProductionOrder.html', data=data)
 
 
@@ -22,11 +25,12 @@ def add_ProductionOrder():
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
         parentOrderID = request.form['ParentOrderID']
+        assignedUser = request.form['AssignedUser']
 
         # Inserisce la ProductionOrder principale
         cursor.execute(
-            'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity, ParentOrderID) VALUES (?, ?, ?, ?)',
-            (orderDate, code, quantity, parentOrderID)
+            'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity, ParentOrderID, AssignedUser) VALUES (?, ?, ?, ?, ?)',
+            (orderDate, code, quantity, parentOrderID, assignedUser)
         )
         inserted_id = cursor.lastrowid
 

@@ -12,7 +12,8 @@ CREATE TABLE "ProductionOrder" (
     "Quantity" INTEGER NOT NULL DEFAULT 1,
     "QuantityCompleted" INTEGER NOT NULL DEFAULT 0,
     "Status" TEXT NOT NULL DEFAULT 'Planned',
-    "ParentOrderID" INTEGER
+    "ParentOrderID" INTEGER,
+    "AssignedUser"	TEXT
 );
 
 CREATE TABLE "ProductionOrderProgress" (
@@ -46,4 +47,9 @@ CREATE TABLE "Logs" (
 CREATE TABLE "Metadata" (
     "MetadataCode" TEXT PRIMARY KEY,
     "Category" TEXT
+);
+
+CREATE TABLE "User" (
+    "Username" TEXT PRIMARY KEY,
+    "DashboardJson" TEXT DEFAULT "{}"
 );

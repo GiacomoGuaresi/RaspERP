@@ -5,76 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Gestionale{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.5/js.cookie.min.js"></script>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='stepbar.css') }}">
-
-    <style>
-        /* Adatta il dropdown di Select2 al tema scuro */
-        .select2-container--bootstrap-5 .select2-selection {
-            background-color: var(--bs-dark);
-            color: var(--bs-light);
-            border: 1px solid var(--bs-gray-600);
-            border-radius: 4px;
-            height: auto;
-            padding: 6px;
-        }
-        .select2-dropdown {
-            background-color: var(--bs-dark);
-            color: var(--bs-light);
-            border: 1px solid var(--bs-gray-600);
-            border-radius: 4px;
-        }
-        .select2-results__option {
-            color: var(--bs-light);
-        }
-        .select2-results__option--highlighted {
-            background-color: var(--bs-primary);
-            color: white;
-        }
-        .select2-selection__arrow {
-            color: var(--bs-light);
-        }
-    </style>
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
-                    RaspERP
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item"><a class="nav-link"
-                                href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="{{ url_for('inventory.view_Inventory') }}">Inventory</a></li>
-                        <li class="nav-item"><a class="nav-link"
-                                href="{{ url_for('product.view_Product') }}">Products</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill
-                                of materials</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a></li>
-                    </ul>
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
+                RaspERP
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.view_Inventory') }}">Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of materials</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a></li>
+                </ul>
+                <div class="d-flex">
+                    <select id="userSelect" class="form-select">
+                        <option value="">No filter</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
-        </nav>
-
+        </div>
     </nav>
-
+    
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
@@ -86,18 +61,17 @@
                 </div>
             </div>
             <p class="text-end">
-                <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseLogs" role="button"
-                    aria-expanded="false" aria-controls="collapseLogs">
+                <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseLogs" role="button" aria-expanded="false" aria-controls="collapseLogs">
                     Logs
                 </a>
             </p>
         </div>
         <div class="container">
-            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi"
-                    class="text-light text-decoration-none" target="_blank">GitHub</a></p>
+            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi" class="text-light text-decoration-none" target="_blank">GitHub</a></p>
             <p class="small mb-0">Built with Flask & Bootstrap 5</p>
         </div>
     </footer>
+
     <script>
         function fetchLogs() {
             fetch('/logs')
@@ -105,7 +79,7 @@
                 .then(data => {
                     const logsContainer = document.getElementById('LogsContainer');
                     logsContainer.innerHTML = ''; // Svuota il contenitore
-    
+
                     // Popola il contenitore con i log ricevuti
                     data.forEach(log => {
                         const logEntry = document.createElement('div');
@@ -117,20 +91,30 @@
                 })
                 .catch(error => console.error('Errore nel recupero dei log:', error));
         }
-    
+
         // Carica i log all'avvio della pagina
         document.addEventListener("DOMContentLoaded", () => {
             fetchLogs(); // Esegui subito al caricamento
             setInterval(fetchLogs, 10000); // Esegui ogni 10 secondi
         });
-    </script>
 
-    <script>
         function confirmDelete() {
             return confirm("Are you sure you want to delete this item?");
         }
+
+        let savedUser = Cookies.get("selectedUser") || "";
+        $("#userSelect").val(savedUser);
+
+        $("#userSelect").change(function () {
+            let selectedUser = $(this).val();
+            Cookies.set("selectedUser", selectedUser, { expires: 7, path: '/' }); // Cookie dura 7 giorni
+            location.reload();
+        });
+
+        function getSelectedUser() {
+            return Cookies.get("selectedUser") || "";
+        }
     </script>
-    
 </body>
 
 </html>

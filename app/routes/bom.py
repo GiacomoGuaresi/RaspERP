@@ -1,6 +1,6 @@
 # app/routes/bom.py
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
-from app.utils import query_db
+from app.utils import query_db, log_action
 
 
 bom_bp = Blueprint("bom", __name__)

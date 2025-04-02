@@ -1,0 +1,29 @@
+/* Adatta il dropdown di Select2 al tema scuro */
+.select2-container--bootstrap-5 .select2-selection {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    border: 1px solid var(--bs-gray-600);
+    border-radius: 4px;
+    height: auto;
+    padding: 6px;
+}
+
+.select2-dropdown {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    border: 1px solid var(--bs-gray-600);
+    border-radius: 4px;
+}
+
+.select2-results__option {
+    color: var(--bs-light);
+}
+
+.select2-results__option--highlighted {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.select2-selection__arrow {
+    color: var(--bs-light);
+}
