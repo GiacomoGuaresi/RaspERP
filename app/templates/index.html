@@ -19,6 +19,42 @@
                 </div>
             </div>
         </div>
+
+        <div class="col">
+            <div class="card h-100 text-center shadow">
+                <div class="card-body">
+                    <div class="display-4 text-danger mb-2">
+                        <i class="mdi mdi-printer-3d"></i>
+                    </div>
+                    <h2 class="card-title mb-3">{{ missingPartsPrintedPart }}</h2>
+                    <p class="card-text text-muted">Printed parts missing</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 text-center shadow">
+                <div class="card-body">
+                    <div class="display-4 text-danger mb-2">
+                        <i class="mdi mdi-chip"></i>
+                    </div>
+                    <h2 class="card-title mb-3">{{ missingPartsComponent }}</h2>
+                    <p class="card-text text-muted">Component missing</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 text-center shadow">
+                <div class="card-body">
+                    <div class="display-4 text-danger mb-2">
+                        <i class="mdi mdi-cogs"></i>
+                    </div>
+                    <h2 class="card-title mb-3">{{ missingPartsSubassembly }}</h2>
+                    <p class="card-text text-muted">Subassembly missing</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% include 'datatable_setup.html' %}
