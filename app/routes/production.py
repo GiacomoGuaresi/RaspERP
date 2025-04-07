@@ -43,8 +43,16 @@ def add_ProductionOrder():
 
 @production_bp.route('/ProductionOrder/delete/<OrderID>')
 def delete_ProductionOrder(OrderID):
-    query_db('DELETE FROM ProductionOrder WHERE OrderID = ?', (OrderID,))
-    query_db('DELETE FROM ProductionOrderProgress WHERE OrderID = ?', (OrderID,))
+    def delete_ProductionOrder_recursive(OrderID):
+        data = query_db(
+            """select * from ProductionOrder  where ParentOrderID = ?""", (OrderID,))
+        for row in data:
+            delete_ProductionOrder_recursive(row["OrderID"])
+
+        query_db('DELETE FROM ProductionOrder WHERE OrderID = ?', (OrderID,))
+        query_db('DELETE FROM ProductionOrderProgress WHERE OrderID = ?', (OrderID,))
+
+    delete_ProductionOrder_recursive(OrderID)
     return redirect(url_for('production.view_ProductionOrder'))
 
 
