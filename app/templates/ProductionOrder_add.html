@@ -36,6 +36,15 @@
                 </select>
             </div>
 
+            <div class="mb-3">
+                <label for="Status" class="form-label">Status:</label>
+                <select id="Status" name="Status" class="form-select">
+                    <option value="Planned" {% if status == 'Planned' %}selected{% endif %}>Planned</option>
+                    <option value="On Going" {% if status == 'On Going' %}selected{% endif %}>On Going</option>
+                </select>
+            </div>
+            
+
             <input type="hidden" id="parentOrderID" name="ParentOrderID" value="{{ ParentOrderID }}">
             <button type="submit" class="btn btn-primary">Add Production Order</button>
             <a href="{{ url_for('production.view_ProductionOrder') }}" class="btn btn-secondary">Go Back</a>

@@ -1,7 +1,8 @@
 # app/routes/production.py
 from flask import Blueprint, render_template, request, redirect, url_for, g
-from app.utils import query_db, get_db, get_current_user
+from app.utils import query_db, get_db, get_current_user, log_action
 from datetime import date
+import json
 
 production_bp = Blueprint("production", __name__)
 
@@ -11,57 +12,33 @@ def view_ProductionOrder():
     if get_current_user() is not None and get_current_user() != "":
         data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE (AssignedUser = ? OR AssignedUser = "")', (get_current_user(),))
     else:
-        data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
+        data = query_db(
+            'SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode')
     return render_template('ProductionOrder.html', data=data)
 
 
 @production_bp.route('/ProductionOrder/add', methods=['GET', 'POST'])
 def add_ProductionOrder():
     if request.method == 'POST':
-        db = get_db()
-        cursor = db.cursor()
-
         orderDate = request.form['OrderDate']
         code = request.form['ProductCode']
         quantity = int(request.form['Quantity'])
         parentOrderID = request.form['ParentOrderID']
         assignedUser = request.form['AssignedUser']
-
-        # Inserisce la ProductionOrder principale
-        cursor.execute(
-            'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity, ParentOrderID, AssignedUser) VALUES (?, ?, ?, ?, ?)',
-            (orderDate, code, quantity, parentOrderID, assignedUser)
-        )
-        inserted_id = cursor.lastrowid
-
-        # Cerca i componenti nella BillOfMaterials
-        cursor.execute(
-            'SELECT ChildProductCode, Quantity FROM BillOfMaterials WHERE ProductCode = ?',
-            (code,)
-        )
-        components = cursor.fetchall()
-
-        for component_code, component_quantity in components:
-            total_quantity = quantity * component_quantity
-
-            cursor.execute(
-                'INSERT INTO ProductionOrderProgress (OrderID, ProductCode, QuantityRequired, QuantityCompleted) VALUES (?, ?, ?, 0)',
-                (inserted_id, component_code, total_quantity,)
-            )
-
-            db.commit()
-
-        db.commit()
+        status = request.form['Status']
+        add_ProductionOrder_process(
+            orderDate, code, quantity, parentOrderID, assignedUser, status)
         return redirect(url_for('production.view_ProductionOrder'))
 
     orderDate = request.args.get('date', date.today().isoformat())
     code = request.args.get('code', '')
     quantity = request.args.get('quantity', '')
     parentOrderID = request.args.get('parentOrderID', '')
+    status = request.args.get("status", 'Planned')
 
     product_codes = query_db('SELECT ProductCode FROM Product')
 
-    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes, ParentOrderID=parentOrderID)
+    return render_template('ProductionOrder_add.html', OrderDate=orderDate, ProductCode=code, Quantity=quantity, product_codes=product_codes, ParentOrderID=parentOrderID, status=status)
 
 
 @production_bp.route('/ProductionOrder/delete/<OrderID>')
@@ -91,7 +68,8 @@ def ongoing_ProductionOrder(OrderID):
     all_progress = cursor.fetchall()
 
     for progress in all_progress:
-        total_quantity = progress["QuantityRequired"] - progress["QuantityCompleted"]
+        total_quantity = progress["QuantityRequired"] - \
+            progress["QuantityCompleted"]
         productCode = progress["ProductCode"]
         progressID = progress["ProgressID"]
         cursor.execute(
@@ -122,13 +100,14 @@ def ongoing_ProductionOrder(OrderID):
 
     return redirect(url_for('production.view_ProductionOrder'))
 
+
 @production_bp.route('/ProductionOrder/increase/<int:OrderID>')
 def increase_ProductionOrder(OrderID):
     db = get_db()
     cursor = db.cursor()
 
     cursor.execute(
-        'SELECT QuantityCompleted, Quantity FROM ProductionOrder WHERE OrderID = ?', 
+        'SELECT QuantityCompleted, Quantity FROM ProductionOrder WHERE OrderID = ?',
         (OrderID,))
     row = cursor.fetchone()
 
@@ -142,7 +121,6 @@ def increase_ProductionOrder(OrderID):
             db.commit()
 
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
-
 
 
 @production_bp.route('/ProductionOrder/decrease/<int:OrderID>')
@@ -163,3 +141,64 @@ def decrease_ProductionOrder(OrderID):
 
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
 
+
+@production_bp.route('/ProductionOrder/addAllSub/<OrderID>')
+def addAllSub_ProductionOrder(OrderID):
+    baseOrderInfo = query_db(
+        """select * from ProductionOrder where OrderID = ?""", (OrderID,))
+    orderDate = baseOrderInfo[0]["OrderDate"]
+    status = baseOrderInfo[0]["Status"]
+
+    def addAllSub_ProductionOrder_recursive(OrderID, orderDate, status):
+        data = query_db("""SELECT *
+            FROM ProductionOrderProgress
+            JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+            LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID AND ProductionOrder.ProductCode = ProductionOrderProgress.ProductCode
+            WHERE ProductionOrderProgress.OrderID = ? AND Category = "Subassembly" and ProductionOrder.OrderID IS null""", (OrderID,))
+        for row in data:
+            metadata = json.loads(row["Metadata"])
+
+            code = row["ProductCode"]
+            quantity = row["QuantityRequired"] - row["QuantityCompleted"]
+            parentOrderID = OrderID
+            assignedUser = metadata.get("DefaultUser", "")
+
+            log_action("Create Suborder for " + code)
+            print("Create Suborder for " + code)
+            inserted_id = add_ProductionOrder_process(
+                orderDate, code, quantity, parentOrderID, assignedUser, status)
+            addAllSub_ProductionOrder_recursive(inserted_id, orderDate, status)
+
+    addAllSub_ProductionOrder_recursive(OrderID, orderDate, status)
+
+    return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
+
+
+def add_ProductionOrder_process(orderDate, code, quantity, parentOrderID, assignedUser, status):
+    db = get_db()
+    cursor = db.cursor()
+
+    # Inserisce la ProductionOrder principale
+    cursor.execute(
+        'INSERT INTO ProductionOrder (OrderDate, ProductCode, Quantity, ParentOrderID, AssignedUser, Status) VALUES (?, ?, ?, ?, ?, ?)',
+        (orderDate, code, quantity, parentOrderID, assignedUser, status)
+    )
+    inserted_id = cursor.lastrowid
+
+    # Cerca i componenti nella BillOfMaterials
+    cursor.execute(
+        'SELECT ChildProductCode, Quantity FROM BillOfMaterials WHERE ProductCode = ?',
+        (code,)
+    )
+    components = cursor.fetchall()
+
+    for component_code, component_quantity in components:
+        total_quantity = quantity * component_quantity
+        cursor.execute(
+            'INSERT INTO ProductionOrderProgress (OrderID, ProductCode, QuantityRequired, QuantityCompleted) VALUES (?, ?, ?, 0)',
+            (inserted_id, component_code, total_quantity,)
+        )
+        db.commit()
+    db.commit()
+
+    return inserted_id

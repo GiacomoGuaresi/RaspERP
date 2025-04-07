@@ -10,7 +10,6 @@ def query_db(query, args=(), one=False):
         
         # Costruire la query con i valori interpolati (non eseguita ancora)
         full_query = query.replace("?", "{}").format(*map(repr, args))
-        print(full_query)  # Stampa per debug
 
         cursor.execute(query, args)
         rv = cursor.fetchall()
