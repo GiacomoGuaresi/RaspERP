@@ -28,14 +28,24 @@ def index():
 
     def get_missing_parts_by_category(category):
         try:
-            result = query_db(f"""
-                SELECT SUM(ProductionOrderProgress.QuantityRequired) - SUM(ProductionOrderProgress.QuantityCompleted) as MissingParts
-                FROM ProductionOrderProgress
-                JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
-                JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-                WHERE ProductionOrder.Status = "On Going"
-                AND Product.Category = "{category}"
-            """)
+            result = {}
+            if get_current_user() is not None and get_current_user() != "":
+                result = query_db(f"""
+                    SELECT SUM(ProductionOrderProgress.QuantityRequired) - SUM(ProductionOrderProgress.QuantityCompleted) as MissingParts
+                    FROM ProductionOrderProgress
+                    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
+                    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+                    WHERE ProductionOrder.Status = "On Going"
+                    AND (AssignedUser = ? OR AssignedUser = "")
+                    AND Product.Category = ?""", (get_current_user(), category,))
+            else:
+                result = query_db(f"""
+                    SELECT SUM(ProductionOrderProgress.QuantityRequired) - SUM(ProductionOrderProgress.QuantityCompleted) as MissingParts
+                    FROM ProductionOrderProgress
+                    JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
+                    JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+                    WHERE ProductionOrder.Status = "On Going"
+                    AND Product.Category = ?""", (category, ))
             if result and result[0] and result[0]["MissingParts"] is not None:
                 return result[0]["MissingParts"]
             else:

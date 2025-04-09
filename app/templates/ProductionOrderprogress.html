@@ -55,12 +55,19 @@
             <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
             <td>{{ row["ProductCode"] }}</td>
             <td>{{ row["Category"] }}</td>
+            
+            {% if row["QuantityCompleted"] == row["QuantityRequired"] %}
+            <td class="text-success">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
+            {% else %}
             <td>{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
+            {% endif %}
+
             {% if row['Category'] == "Subassembly" and row['childOrderID']%}
             <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
             {% else %}
             <td>-</td>
             {% endif %}
+
             <td>
                 <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-success btn-sm">+</a>
                 <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-danger btn-sm">-</a>
