@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Updating system and installing required packages..."
-sudo apt update && sudo apt install -y python3 python3-pip chromium-browser unclutter sqlite3
+sudo apt update && sudo apt install -y python3 python3-pip unclutter sqlite3
 
 echo "Installing Python dependencies..."
 pip3 install -r requirements.txt
