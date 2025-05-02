@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Database Manager{% endblock %}
+{% block content %}
+
+<h2 class="text-center my-3">Database Manager</h2>
+
+<div class="mb-4">
+  <form action="{{ url_for('databasemanager.download_db') }}" method="get" class="d-inline">
+    <button type="submit" class="btn btn-primary me-2">Scarica database</button>
+  </form>
+
+  <form action="{{ url_for('databasemanager.upload_db') }}" method="post" enctype="multipart/form-data"
+    class="d-inline">
+    <label class="btn btn-secondary me-2 mb-0">
+      Carica nuovo database
+      <input type="file" name="db_file" accept=".db" hidden onchange="this.form.submit()">
+    </label>
+  </form>
+
+  <form action="{{ url_for('databasemanager.backup_db') }}" method="post" class="d-inline">
+    <button type="submit" class="btn btn-success me-2">Backup rapido</button>
+  </form>
+
+  <!-- Button to trigger modal -->
+  <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#restoreModal">
+    Ripristina backup
+  </button>
+</div>
+
+<!-- Modal for restore -->
+<div class="modal fade" id="restoreModal" tabindex="-1" aria-labelledby="restoreModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{{ url_for('databasemanager.restore_backup') }}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="restoreModalLabel">Ripristina da backup</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+        </div>
+        <div class="modal-body">
+          <label for="backup_file" class="form-label">Scegli backup:</label>
+          <select class="form-select" id="backup_file" name="backup_file" required>
+            {% for file in backups %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-warning">Ripristina</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<h5>Comandi rapidi</h5>
+<div class="mb-3">
+  <span class="badge bg-primary me-2 command-badge" data-command="SELECT * FROM ">SELECT</span>
+  <span class="badge bg-success me-2 command-badge" data-command="INSERT INTO ">INSERT</span>
+  <span class="badge bg-warning text-dark me-2 command-badge" data-command="UPDATE  SET ">UPDATE</span>
+  <span class="badge bg-danger me-2 command-badge" data-command="DELETE FROM ">DELETE</span>
+</div>
+
+<h5>Tabelle</h5>
+<div class="mb-3">
+  {% for table in tables %}
+  <span class="badge bg-secondary me-2 table-badge" data-table="{{ table }}">{{ table }}</span>
+  {% endfor %}
+</div>
+
+<form method="POST" action="{{ url_for('databasemanager.view_DatabaseManager') }}">
+  <div class="form-group">
+    <label for="query">SQL Query:</label>
+    <textarea class="form-control" id="query" name="query" rows="6" required>{{ request.form.query or '' }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary mt-2">Esegui</button>
+</form>
+
+{% if result %}
+<h4 class="mt-4">Risultati:</h4>
+<div class="table-responsive">
+  <table class="table table-bordered table-sm table-hover mt-2">
+    <thead class="table-light">
+      <tr>
+        {% for col in columns %}
+        <th>{{ col }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in result %}
+      <tr>
+        {% for col in columns %}
+        <td>{{ row[col] }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% elif message %}
+<div class="alert alert-info mt-4">{{ message }}</div>
+{% elif error %}
+<div class="alert alert-danger mt-4">{{ error }}</div>
+{% endif %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const queryArea = document.getElementById('query');
+
+    document.querySelectorAll('.command-badge').forEach(badge => {
+      badge.addEventListener('click', () => {
+        queryArea.value = badge.dataset.command;
+        queryArea.focus();
+      });
+    });
+
+    document.querySelectorAll('.table-badge').forEach(badge => {
+      badge.addEventListener('click', () => {
+        const cursorPos = queryArea.selectionStart;
+        const currentVal = queryArea.value;
+        const tableName = badge.dataset.table;
+        // Inserisce il nome della tabella nella posizione corrente del cursore
+        queryArea.value = currentVal.slice(0, cursorPos) + tableName + currentVal.slice(cursorPos);
+        queryArea.focus();
+      });
+    });
+  });
+</script>
+
+
+{% include 'datatable_setup.html' %}
+
+{% endblock %}

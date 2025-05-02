@@ -44,7 +44,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of materials</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a></li>.
                 </ul>
                 <div class="d-flex">
                     <select id="userSelect" class="form-select">
@@ -71,6 +71,10 @@
             <p class="text-end">
                 <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseLogs" role="button" aria-expanded="false" aria-controls="collapseLogs">
                     Logs
+                </a>
+                
+                <a class="btn btn-outline-secondary" href="{{ url_for('databasemanager.view_DatabaseManager') }}" role="button">
+                    Database manager
                 </a>
             </p>
         </div>

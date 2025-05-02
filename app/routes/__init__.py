@@ -8,6 +8,7 @@ from app.routes.progress import progress_bp
 from app.routes.product import product_bp
 from app.routes.inventory import inventory_bp
 from app.routes.metadata import metadata_bp
+from app.routes.databasemanager import databasemanager_bp
 
 def register_routes(app):
     app.register_blueprint(home_bp)
@@ -17,3 +18,4 @@ def register_routes(app):
     app.register_blueprint(product_bp)
     app.register_blueprint(inventory_bp)
     app.register_blueprint(metadata_bp)
+    app.register_blueprint(databasemanager_bp)
