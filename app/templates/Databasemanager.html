@@ -53,24 +53,20 @@
 </div>
 
 
-<h5>Comandi rapidi</h5>
-<div class="mb-3">
-  <span class="badge bg-primary me-2 command-badge" data-command="SELECT * FROM ">SELECT</span>
-  <span class="badge bg-success me-2 command-badge" data-command="INSERT INTO ">INSERT</span>
-  <span class="badge bg-warning text-dark me-2 command-badge" data-command="UPDATE  SET ">UPDATE</span>
-  <span class="badge bg-danger me-2 command-badge" data-command="DELETE FROM ">DELETE</span>
-</div>
-
-<h5>Tabelle</h5>
-<div class="mb-3">
-  {% for table in tables %}
-  <span class="badge bg-secondary me-2 table-badge" data-table="{{ table }}">{{ table }}</span>
-  {% endfor %}
-</div>
-
 <form method="POST" action="{{ url_for('databasemanager.view_DatabaseManager') }}">
   <div class="form-group">
     <label for="query">SQL Query:</label>
+    <div class="mb-1">
+      <span class="badge bg-primary me-2 command-badge" data-command="SELECT * FROM ">SELECT</span>
+      <span class="badge bg-success me-2 command-badge" data-command="INSERT INTO ">INSERT</span>
+      <span class="badge bg-warning text-dark me-2 command-badge" data-command="UPDATE  SET ">UPDATE</span>
+      <span class="badge bg-danger me-2 command-badge" data-command="DELETE FROM ">DELETE</span>
+    
+      {% for table in tables %}
+      <span class="badge bg-secondary me-2 table-badge" data-table="{{ table }}">{{ table }}</span>
+      {% endfor %}
+    </div>
+    
     <textarea class="form-control" id="query" name="query" rows="6" required>{{ request.form.query or '' }}</textarea>
   </div>
   <button type="submit" class="btn btn-primary mt-2">Esegui</button>
