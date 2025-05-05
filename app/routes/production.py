@@ -175,6 +175,10 @@ def addAllSub_ProductionOrder(OrderID):
             print("Create Suborder for " + code)
             inserted_id = add_ProductionOrder_process(
                 orderDate, code, quantity, parentOrderID, assignedUser, status)
+            
+            if(status == "On Going"):
+                ongoing_ProductionOrder(inserted_id)
+
             addAllSub_ProductionOrder_recursive(inserted_id, orderDate, status)
 
     addAllSub_ProductionOrder_recursive(OrderID, orderDate, status)
