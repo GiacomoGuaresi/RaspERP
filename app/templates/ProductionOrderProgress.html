@@ -35,9 +35,15 @@
 </div>
 <a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-success mb-3">+</a>
 <a href="{{ url_for('production.decrease_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-danger mb-3">-</a>
+{% if order['Status'] == "Planned" %}
 <a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as On going</a>
+{% endif %}
+{% if order['Status'] == "On Going" %}
 <a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as Complete</a>
+{% endif %}
+
 <a href="{{ url_for('production.addAllSub_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">Create ALL sub production order</a>
+
 <table id="ProductionOrderTable" class="table table-striped">
     <thead>
         <tr>

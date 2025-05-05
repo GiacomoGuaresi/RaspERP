@@ -1,6 +1,7 @@
 # app/routes/production.py
 from flask import Blueprint, render_template, request, redirect, url_for, g
 from app.utils import query_db, get_db, get_current_user, log_action
+from app.routes.inventory import increase_Inventory
 from datetime import date
 import json
 
@@ -60,6 +61,13 @@ def delete_ProductionOrder(OrderID):
 def complete_ProductionOrder(OrderID):
     query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
              ("Complete", OrderID))
+    
+    quantity = query_db('SELECT Quantity FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["Quantity"]
+    productCode = query_db('SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
+    # call increase_Inventory(ProductCode) 
+    for i in range(quantity):
+        increase_Inventory(productCode)
+
     return redirect(url_for('production.view_ProductionOrder'))
 
 
