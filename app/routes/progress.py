@@ -2,10 +2,12 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from app.utils import query_db, get_db
 from datetime import date
+from flask_login import login_required
 
 progress_bp = Blueprint("progress", __name__)
 
 @progress_bp.route('/ProductionOrderProgress/<int:OrderID>')
+@login_required
 def view_ProductionOrderProgress(OrderID):
     data = query_db("""
         SELECT ProductionOrderProgress.*, Product.*, 
@@ -22,6 +24,7 @@ def view_ProductionOrderProgress(OrderID):
     return render_template('ProductionOrderProgress.html', data=data, current_date=date.today().isoformat(), order=order)
 
 @progress_bp.route('/ProductionOrderProgress/increase/<int:ProgressID>')
+@login_required
 def increase_ProductionOrderProgress(ProgressID):
     OrderID = request.args.get('OrderID', type=int)
     db = get_db()
@@ -44,6 +47,7 @@ def increase_ProductionOrderProgress(ProgressID):
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
 
 @progress_bp.route('/ProductionOrderProgress/decrease/<int:ProgressID>')
+@login_required
 def decrease_ProductionOrderProgress(ProgressID):
     OrderID = request.args.get('OrderID', type=int)
     db = get_db()

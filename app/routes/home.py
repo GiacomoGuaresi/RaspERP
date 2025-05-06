@@ -71,6 +71,7 @@ def index():
 
 
 @home_bp.route("/logs")
+@login_required
 def logs():
     data = query_db('SELECT * FROM Logs ORDER BY timestamp DESC LIMIT 50')
     logs = [dict(row) for row in data]
@@ -78,5 +79,6 @@ def logs():
 
 
 @home_bp.route("/whoami")
+@login_required
 def whoami():
     return jsonify({"selected_user": g.selected_user})

@@ -5,17 +5,20 @@ from PIL import Image
 from flask import Blueprint, request, redirect, url_for, render_template
 from app.utils import query_db
 import json
+from flask_login import login_required
 
 product_bp = Blueprint("product", __name__)
 
 
 @product_bp.route('/Product')
+@login_required
 def view_Product():
     data = query_db('SELECT * FROM Product')
     return render_template('Product.html', data=data)
 
 
 @product_bp.route('/Product/<code>', methods=['GET'])
+@login_required
 def view_Product_detail(code):
     product = query_db(
         'SELECT * FROM Product WHERE ProductCode = ?', (code,), one=True)
@@ -27,6 +30,7 @@ def view_Product_detail(code):
 
 
 @product_bp.route('/Product/add', methods=['GET', 'POST'])
+@login_required
 def add_Product():
     if request.method == 'POST':
         try:
@@ -66,12 +70,14 @@ def add_Product():
 
 
 @product_bp.route('/Product/delete/<code>')
+@login_required
 def delete_Product(code):
     query_db('DELETE FROM Product WHERE ProductCode = ?', (code,))
     return redirect(url_for('product.view_Product'))
 
 
 @product_bp.route('/Product/edit/<code>', methods=['GET', 'POST'])
+@login_required
 def edit_Product(code):
     product = query_db(
         'SELECT * FROM Product WHERE ProductCode = ?', (code,), one=True)

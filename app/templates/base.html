@@ -30,6 +30,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                {% if g.selected_user and g.selected_user != 'anonimo' %}
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
                     <li class="nav-item dropdown">
@@ -46,6 +47,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a></li>
                 </ul>
+                {% endif %}
                 <div class="d-flex">
                     <select id="userSelect" class="form-select">
                         <option value="">No filter</option>

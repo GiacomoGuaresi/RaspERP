@@ -4,11 +4,14 @@ from app.utils import query_db, get_db, get_current_user, log_action
 from app.routes.inventory import increase_Inventory
 from datetime import date
 import json
+from flask_login import login_required
+
 
 production_bp = Blueprint("production", __name__)
 
 
 @production_bp.route('/ProductionOrder')
+@login_required
 def view_ProductionOrder():
     if get_current_user() is not None and get_current_user() != "":
         data = query_db('SELECT * FROM ProductionOrder LEFT JOIN Product ON Product.ProductCode = ProductionOrder.ProductCode WHERE (AssignedUser = ? OR AssignedUser = "")', (get_current_user(),))
@@ -19,6 +22,7 @@ def view_ProductionOrder():
 
 
 @production_bp.route('/ProductionOrder/add', methods=['GET', 'POST'])
+@login_required
 def add_ProductionOrder():
     if request.method == 'POST':
         orderDate = request.form['OrderDate']
@@ -43,6 +47,7 @@ def add_ProductionOrder():
 
 
 @production_bp.route('/ProductionOrder/delete/<OrderID>')
+@login_required
 def delete_ProductionOrder(OrderID):
     def delete_ProductionOrder_recursive(OrderID):
         data = query_db(
@@ -58,6 +63,7 @@ def delete_ProductionOrder(OrderID):
 
 
 @production_bp.route('/ProductionOrder/complete/<OrderID>')
+@login_required
 def complete_ProductionOrder(OrderID):
     query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
              ("Complete", OrderID))
@@ -72,6 +78,7 @@ def complete_ProductionOrder(OrderID):
 
 
 @production_bp.route('/ProductionOrder/ongoing/<OrderID>')
+@login_required
 def ongoing_ProductionOrder(OrderID):
     db = get_db()
     cursor = db.cursor()
@@ -118,6 +125,7 @@ def ongoing_ProductionOrder(OrderID):
 
 
 @production_bp.route('/ProductionOrder/increase/<int:OrderID>')
+@login_required
 def increase_ProductionOrder(OrderID):
     db = get_db()
     cursor = db.cursor()
@@ -140,6 +148,7 @@ def increase_ProductionOrder(OrderID):
 
 
 @production_bp.route('/ProductionOrder/decrease/<int:OrderID>')
+@login_required
 def decrease_ProductionOrder(OrderID):
     db = get_db()
     cursor = db.cursor()
@@ -159,6 +168,7 @@ def decrease_ProductionOrder(OrderID):
 
 
 @production_bp.route('/ProductionOrder/addAllSub/<OrderID>')
+@login_required
 def addAllSub_ProductionOrder(OrderID):
     baseOrderInfo = query_db(
         """select * from ProductionOrder where OrderID = ?""", (OrderID,))

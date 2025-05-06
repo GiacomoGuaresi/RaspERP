@@ -4,11 +4,13 @@ from app.utils import query_db, get_db, log_action
 import re
 import datetime
 from collections import defaultdict
+from flask_login import login_required
 
 inventory_bp = Blueprint("inventory", __name__)
 
 
 @inventory_bp.route('/Inventory')
+@login_required
 def view_Inventory():
     category = request.args.get('category', '')
     search = request.args.get('search', '')
@@ -18,6 +20,7 @@ def view_Inventory():
     return render_template('Inventory.html', data=data, selected_category=category, search_text=search, error=error)
 
 @inventory_bp.route('/Inventory/missingParts')
+@login_required
 def missingParts_Inventory():
     ordersOnGoing = query_db("""SELECT ProductionOrderProgress.*, Product.Category, ProductionOrder.ProductCode as OrderProductCode 
     FROM ProductionOrderProgress
@@ -45,10 +48,8 @@ def missingParts_Inventory():
 
     return render_template("inventory_missingParts.html", grouped_orders_ongoing=grouped_orders_ongoing, grouped_orders_planned=grouped_orders_planned)
     
-    
-    
-
 @inventory_bp.route('/Inventory/increase/<ProductCode>')
+@login_required
 def increase_Inventory(ProductCode):
     category = request.args.get('category', '')
     search = request.args.get('search', '')
@@ -94,6 +95,7 @@ def increase_Inventory(ProductCode):
 
 
 @inventory_bp.route('/Inventory/decrease/<ProductCode>')
+@login_required
 def decrease_Inventory(ProductCode):
     category = request.args.get('category', '')
     search = request.args.get('search', '')
@@ -116,6 +118,7 @@ def decrease_Inventory(ProductCode):
 
 
 @inventory_bp.route('/Inventory/work/<ProductCode>')
+@login_required
 def work_Inventory(ProductCode):
     category = request.args.get('category', '')
     search = request.args.get('search', '')
@@ -145,6 +148,7 @@ last_direction = None
 
 
 @inventory_bp.route('/Inventory/codereader', methods=['GET', 'POST'])
+@login_required
 def codereader_Inventory():
     global last_scanned, last_added_count, last_moment, last_direction
 

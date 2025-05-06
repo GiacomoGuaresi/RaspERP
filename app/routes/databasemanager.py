@@ -5,6 +5,7 @@ from app.utils import query_db, log_action
 import os
 import shutil
 import time
+from flask_login import login_required
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__) + "/../..")
 DB_PATH = os.path.join(BASE_DIR, "database.db")
@@ -15,6 +16,7 @@ databasemanager_bp = Blueprint("databasemanager", __name__)
 
 
 @databasemanager_bp.route('/DatabaseManager', methods=['GET', 'POST'])
+@login_required
 def view_DatabaseManager():
     tables = [row['name'] for row in query_db("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")]
     backups = sorted(os.listdir(BACKUP_DIR), reverse=True)
@@ -36,11 +38,13 @@ def view_DatabaseManager():
 
 # Scarica DB
 @databasemanager_bp.route('/download')
+@login_required
 def download_db():
     return send_file(DB_PATH, as_attachment=True, download_name="database.db")
 
 # Carica DB
 @databasemanager_bp.route('/upload', methods=['POST'])
+@login_required
 def upload_db():
     file = request.files.get('db_file')
     if file and file.filename.endswith('.db'):
@@ -52,6 +56,7 @@ def upload_db():
 
 # Backup DB
 @databasemanager_bp.route('/backup', methods=['POST'])
+@login_required
 def backup_db():
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     backup_path = os.path.join(BACKUP_DIR, f"backup_{timestamp}.db")
@@ -61,6 +66,7 @@ def backup_db():
 
 # Ripristina da backup
 @databasemanager_bp.route('/restore', methods=['POST'])
+@login_required
 def restore_backup():
     filename = request.form.get('backup_file')
     if filename and filename.endswith(".db"):
