@@ -23,3 +23,8 @@ class User(UserMixin):
         if row:
             return User(row['Username'], row['Email'], row['Password'])
         return None
+
+    def update(self):
+        db = get_db()
+        db.execute('UPDATE User SET Email = ?, Password = ? WHERE Username = ?', (self.email, self.password, self.id))
+        db.commit()

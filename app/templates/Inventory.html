@@ -35,13 +35,11 @@
                 <span class="text-warning"><span class="mdi mdi-archive-lock-outline"></span> {{ row['Locked'] }}</span>
                 <span class="text-success"><span class="mdi mdi-archive-outline"></span> {{ row['QuantityOnHand'] - row['Locked'] }}</span>
             </p>
-            <div class="btn-group" role="group">
+            <div class="btn-group inventory-control" role="group">
                 <a class="btn btn-success btn-sm update-href" data-base-href="{{ url_for('inventory.increase_Inventory', ProductCode=row['ProductCode']) }}" title="Increase">
                     <span class="mdi mdi-archive-plus"></span>
                 </a>
-                <a class="btn btn-warning btn-sm update-href" data-base-href="{{ url_for('inventory.work_Inventory', ProductCode=row['ProductCode']) }}" title="Edit">
-                    <span class="mdi mdi-archive-cog"></span>
-                </a>
+                <input type="number" class="form-control form-control-sm text-center" value="1" min="0" max="9999" name="deltaValue">
                 <a class="btn btn-danger btn-sm update-href" data-base-href="{{ url_for('inventory.decrease_Inventory', ProductCode=row['ProductCode']) }}" title="Decrease">
                     <span class="mdi mdi-archive-minus"></span>
                 </a>
@@ -93,6 +91,17 @@
 
         $('#category-select').trigger('change');
         $('#search-text').trigger('input');
+
+        $('.inventory-control .update-href').on('click', function(e) {
+        e.preventDefault();
+
+        var $btn = $(this);
+        var $wrapper = $btn.closest('.inventory-control');
+        var delta = $wrapper.find('input[name="deltaValue"]').val();
+        var baseHref = $btn.data('base-href');
+
+        window.location.href = baseHref + '?delta=' + encodeURIComponent(delta);
+    });
     });
 
     function showFloatingAlert(message, type = "danger") {

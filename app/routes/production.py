@@ -70,9 +70,7 @@ def complete_ProductionOrder(OrderID):
     
     quantity = query_db('SELECT Quantity FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["Quantity"]
     productCode = query_db('SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
-    # call increase_Inventory(ProductCode) 
-    for i in range(quantity):
-        increase_Inventory(productCode)
+    increase_Inventory(productCode, quantity)
 
     return redirect(url_for('production.view_ProductionOrder'))
 

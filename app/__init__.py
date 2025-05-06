@@ -4,6 +4,7 @@ from app.utils import query_db
 from app.routes import register_routes
 from flask_login import LoginManager
 from datetime import timedelta
+from flask_login import current_user
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'  # aggiorna col tuo blueprint effettivo
@@ -30,5 +31,13 @@ def create_app():
         """Rende disponibile la lista utenti in tutti i template."""
         users = query_db("SELECT * FROM user")
         return {"users": users, "selected_user": g.selected_user}
+    
+    @app.before_request
+    def before_request():
+        if current_user.is_authenticated:
+            g.selected_user = current_user.id
+        else:
+            g.selected_user = "anonimo"
+
 
     return app
