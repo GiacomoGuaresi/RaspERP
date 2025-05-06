@@ -4,17 +4,20 @@ from io import BytesIO
 from PIL import Image
 from flask import Blueprint, request, redirect, url_for, render_template
 from app.utils import query_db
+from flask_login import login_required
 
 metadata_bp = Blueprint("metadata", __name__)
 
 
 @metadata_bp.route('/Metadata')
+@login_required
 def view_Metadata():
     data = query_db('SELECT * FROM Metadata')
     return render_template('Metadata.html', data=data)
 
 
 @metadata_bp.route('/Metadata/add', methods=['GET', 'POST'])
+@login_required
 def add_Metadata():
     if request.method == 'POST':
         try:
@@ -32,6 +35,7 @@ def add_Metadata():
 
 
 @metadata_bp.route('/Metadata/delete/<metadataCode>')
+@login_required
 def delete_Metadata(metadataCode):
     query_db('DELETE FROM Metadata WHERE MetadataCode = ?', (metadataCode,))
     return redirect(url_for('metadata.view_Metadata'))

@@ -51,5 +51,7 @@ CREATE TABLE "Metadata" (
 
 CREATE TABLE "User" (
     "Username" TEXT PRIMARY KEY,
+    "Email" TEXT,
+    "Password" TEXT,
     "DashboardJson" TEXT DEFAULT "{}"
 );

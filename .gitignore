@@ -5,3 +5,6 @@ __pycache__/
 # Ignora database SQLite
 *.sqlite3
 *.db
+
+# Ignora file di configurazione
+.secret_key
