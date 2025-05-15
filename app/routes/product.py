@@ -62,6 +62,17 @@ def add_Product():
             # Inserisci nel DB
             query_db('INSERT INTO Product (ProductCode, Category, Image, Metadata) VALUES (?, ?, ?, ?)',
                      (product_code, category, image_base64, json.dumps(metadata)))
+            
+            # Insert in inventory as 0 0 if not exists 
+            # CREATE TABLE "Inventory" (
+            #     "ProductCode" TEXT PRIMARY KEY,
+            #     "QuantityOnHand" INTEGER NOT NULL DEFAULT 0,
+            #     "Locked" INTEGER NOT NULL DEFAULT 0
+            # );
+
+            query_db('INSERT OR IGNORE INTO Inventory (ProductCode, QuantityOnHand, Locked) VALUES (?, ?, ?)',
+                     (product_code, 0, 0))
+
             return redirect(url_for('product.view_Product'))
         except:
             return render_template('Product_add.html', message=f'The product {product_code} is already present in the database')
