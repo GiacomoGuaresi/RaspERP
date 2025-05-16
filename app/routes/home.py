@@ -1,5 +1,5 @@
 # app/routes/home.py
-from flask import Blueprint, render_template, jsonify, g
+from flask import Blueprint, render_template, jsonify, g, request
 from app.utils import query_db, get_current_user
 from collections import defaultdict
 from flask_login import login_required
@@ -81,4 +81,18 @@ def logs():
 @home_bp.route("/whoami")
 @login_required
 def whoami():
-    return jsonify({"selected_user": g.selected_user})
+    returnObject = {}
+    
+    ip = request.remote_addr
+    if ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."):
+        returnObject["Side"] = "Internal"
+        returnObject["ip"] = ip
+    else:
+        returnObject["Side"] = "External"
+        returnObject["ip"] = ip
+    
+    returnObject["user"] = get_current_user()
+
+    return jsonify(returnObject)
+
+
