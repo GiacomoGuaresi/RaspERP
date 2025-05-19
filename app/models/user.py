@@ -28,3 +28,11 @@ class User(UserMixin):
         db = get_db()
         db.execute('UPDATE User SET Email = ?, Password = ? WHERE Username = ?', (self.email, self.password, self.id))
         db.commit()
+
+    def get_by_pin(pin):
+        db = get_db()
+        cur = db.execute('SELECT Username, Email, Password FROM User WHERE Pin = ?', (pin,))
+        row = cur.fetchone()
+        if row:
+            return User(row['Username'], row['Email'], row['Password'])
+        return None

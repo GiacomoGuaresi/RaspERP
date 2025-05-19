@@ -11,7 +11,6 @@ def login():
         email = request.form['email']
         password = request.form['password']
         remember = 'remember' in request.form
-
         user = User.get_by_email(email)
         if user and (user.password == sha256(password.encode('utf-8')).hexdigest()):
             login_user(user, remember=remember)
@@ -57,3 +56,22 @@ def user():
         return redirect(url_for("auth.user"))
 
     return render_template("user.html", user=user)
+
+
+@auth_bp.route('/locallogin', methods=['GET', 'POST'])
+def localLogin():
+    ip = request.remote_addr
+    # if not (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172.")):
+    #     return render_template('locallogin.html')
+    if request.method == 'POST':
+        pin = request.form['pin']
+
+        user = User.get_by_pin(pin)
+        if user:
+            login_user(user, remember=False)
+            session.permanent = False
+            return redirect(url_for('home.index'))
+        else:
+            flash("Credenziali non valide", "danger")
+
+    return render_template('locallogin.html')

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  .numpad button {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.5rem;
+  }
+
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .login-container {
+    max-width: 400px;
+    margin: auto;
+    padding-top: 50px;
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="login-container text-center">
+    <h2 class="mb-4">Enter PIN</h2>
+    <form method="POST">
+      <input type="password" inputmode="numeric" maxlength="5" minlength="5" class="form-control pin-input mx-auto" id="pin-input" name="pin" required autofocus>
+      <div class="numpad mt-3">
+        {% for num in range(1, 10) %}
+        <button type="button" class="btn btn-secondary num-btn" data-digit="{{ num }}">{{ num }}</button>
+        {% endfor %}
+        <button type="button" class="btn btn-secondary" id="clear-btn">C</button>
+        <button type="button" class="btn btn-secondary num-btn" data-digit="0">0</button>
+        <button type="submit" class="btn btn-primary" id="submit-btn" disabled>OK</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+        const pinInput = document.getElementById("pin-input");
+        const submitBtn = document.getElementById("submit-btn");
+
+        function updateSubmitState() {
+            submitBtn.disabled = pinInput.value.length !== 5;
+        }
+
+        document.querySelectorAll(".num-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (pinInput.value.length < 5) {
+                    pinInput.value += btn.dataset.digit;
+                    updateSubmitState();
+                }
+            });
+        });
+
+        document.getElementById("clear-btn").addEventListener("click", () => {
+            pinInput.value = "";
+            updateSubmitState();
+        });
+
+        pinInput.addEventListener("input", updateSubmitState);
+    </script>
+{% endblock %}
