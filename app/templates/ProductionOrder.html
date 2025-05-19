@@ -89,7 +89,7 @@
                     {% elif row['Status'] == 'Complete' %}
                         bg-success
                     {% else %}
-                        bg-info
+                        bg-secondary
                     {% endif %}
                 ">
                     {{ row["Status"] }}
@@ -100,7 +100,7 @@
                     {% if row.AssignedUser is none or row.AssignedUser == '' %}
                         bg-dark
                     {% else %}
-                        bg-primary
+                        bg-info text-dark
                     {% endif %}
                 ">
                     {% if row.AssignedUser is none or row.AssignedUser == '' %}
