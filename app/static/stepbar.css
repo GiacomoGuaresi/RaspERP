@@ -29,6 +29,6 @@
 
 .steps-complete {
     background-color: var(--bs-success);
-    color: var(--bs-body-color);
+    color: var(--bs-white);
     border-color: var(--bs-success);
 }

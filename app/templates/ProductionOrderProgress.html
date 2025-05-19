@@ -25,70 +25,119 @@
             <img class="rounded" src="{{ order['image'] }}" width="100%" />
         </div>
         <div class="col">
-            <p>Product: {{ order["ProductCode"] }}</p>
-            <p>Order date: {{ order["OrderDate"] }}</p>
-            <p>Quantity: {{ order["QuantityCompleted"] }}/{{ order["Quantity"] }}</p>
-            <p>Status: {{ order["Status"] }}</p>
-            <p>Assigned to: {{ order["AssignedUser"] }}</p>
+            <!-- <p>Product: {{ order["ProductCode"] }}</p> -->
+            <h3>Product: {{ order["ProductCode"] }}</h3>
+            <strong>Order Date:</strong> <span class="text-muted">{{ order["OrderDate"] }}</span><br>
+            <strong>Progress:</strong> <span class="badge bg-secondary">{{ order["QuantityCompleted"] }}/{{ order["Quantity"] }}</span><br>
+            <strong>Status:</strong>
+            <span class="badge 
+                    {% if order['Status'] == 'On Going' %}
+                        bg-warning text-dark
+                    {% elif order['Status'] == 'Complete' %}
+                        bg-success
+                    {% else %}
+                        bg-secondary
+                    {% endif %}
+                ">
+                {{ order["Status"] }}
+            </span><br>
+            <strong>Assigned to:</strong>
+            <span class="badge 
+                    {% if order.AssignedUser is none or order.AssignedUser == '' %}
+                        bg-dark
+                    {% else %}
+                        bg-primary
+                    {% endif %}
+                ">
+                {% if order.AssignedUser is none or order.AssignedUser == '' %}
+                EVERYBODY
+                {% else %}
+                {{ order.AssignedUser }}
+                {% endif %}
+            </span>
         </div>
     </div>
 </div>
-<a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-success mb-3">+</a>
-<a href="{{ url_for('production.decrease_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-danger mb-3">-</a>
+<div class="btn-group inventory-control" role="group">
+    <a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-success mb-3">
+        <span class="mdi mdi-plus"></span>
+    </a>
+    <a href="{{ url_for('production.decrease_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-danger mb-3">
+        <span class="mdi mdi-minus"></span>
+    </a>
+</div>
+
 {% if order['Status'] == "Planned" %}
-<a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as On going</a>
+<a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">
+    <span class="mdi mdi-play"></span> Set as On Going
+</a>
 {% endif %}
 {% if order['Status'] == "On Going" %}
-<a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-primary mb-3">Mark as Complete</a>
+<a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-success mb-3">
+    <span class="mdi mdi-check"></span> Set as Complete
+</a>
 {% endif %}
+<a href="{{ url_for('production.addAllSub_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">
+    <span class="mdi mdi-auto-fix"></span> Add All Subassembly task
+</a>
 
-<a href="{{ url_for('production.addAllSub_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">Create ALL sub production order</a>
+<div class="d-flex flex-wrap justify-content-center">
+    {% for row in data %}
+    <div class="card m-2 text-center" style="width: 12rem;">
+        <img class="card-img-top" src="{{ row['image'] }}" alt="Product Image" />
+        <div class="card-body">
+            <h6 class="card-title">{{ row['ProductCode'] }}</h6>
+            <p class="card-text small mb-2">
+                <strong>Category:</strong><br>
+                <span class="text-muted">{{ row["Category"] }}</span><br><br>
 
-<table id="ProductionOrderTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>ProductCode</th>
-            <th>Category</th>
-            <th>Quantity</th>
-            <th>Assigend to</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        <tr>
-            <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-            <td>{{ row["ProductCode"] }}</td>
-            <td>{{ row["Category"] }}</td>
-            
-            {% if row["QuantityCompleted"] == row["QuantityRequired"] %}
-            <td class="text-success">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
-            {% else %}
-            <td>{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</td>
-            {% endif %}
-
-            {% if row['Category'] == "Subassembly" and row['childOrderID']%}
-            <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
-            {% else %}
-            <td>-</td>
-            {% endif %}
-
-            <td>
-                <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-success btn-sm">+</a>
-                <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-danger btn-sm">-</a>
-                {% if row['Category'] == "Subassembly" %}
-                {% if row['childOrderID'] %}
-                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}" class="btn btn-primary btn-sm">View Production order</a>
+                <strong>Progress:</strong><br>
+                {% if row["QuantityCompleted"] == row["QuantityRequired"] %}
+                <span class="badge bg-success">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</span>
                 {% else %}
-                <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID'], status=order['Status']) }}" class="btn btn-primary btn-sm add-productionorder">Add Production order</a>
+                <span class="badge bg-secondary">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</span>
                 {% endif %}
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+                <strong>Assigned to:</strong><br>
+                <span class="badge 
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                        bg-dark
+                    {% else %}
+                        bg-info text-dark
+                    {% endif %}
+                ">
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                    EVERYBODY
+                    {% else %}
+                    {{ row.AssignedUser }}
+                    {% endif %}
+                </span>
+            </p>
+            {% if row['Category'] == "Subassembly" %}
+            {% if row['childOrderID'] %}
+            <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}" class="btn btn-primary btn-sm">
+                <span class="mdi mdi-eye-outline"></span> View
+            </a>
+            {% else %}
+            <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID'], status=order['Status']) }}" class="btn btn-warning btn-sm add-productionorder">
+                <span class="mdi mdi-auto-fix"></span> Create
+            </a>
+            {% endif %}
+            {% else %}
+            <div class="btn-group inventory-control" role="group">
+                <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-success btn-sm">
+                    <span class="mdi mdi-plus"></span>
+                </a>
+                <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-danger btn-sm">
+                    <span class="mdi mdi-minus"></span>
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
 
 {% include 'datatable_setup.html' %}
 
