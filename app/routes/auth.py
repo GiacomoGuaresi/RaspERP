@@ -13,9 +13,6 @@ def login():
         remember = 'remember' in request.form
 
         user = User.get_by_email(email)
-        print(user.password)
-        print(sha256(password.encode('utf-8')).hexdigest())
-
         if user and (user.password == sha256(password.encode('utf-8')).hexdigest()):
             login_user(user, remember=remember)
             session.permanent = remember
