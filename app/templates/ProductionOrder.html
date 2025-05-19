@@ -4,111 +4,119 @@
 
 <h2 class="text-center my-3">Production orders</h2>
 <a href="{{ url_for('production.add_ProductionOrder') }}" class="btn btn-primary mb-3">Add New</a>
-
-<table id="ProductionOrderTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Product code</th>
-            <th>Date</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Assigend to</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        {% if row["Status"]!="Complete" and row["ParentOrderID"]=="" %}
-        <tr>
-            <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-            <td>{{ row["ProductCode"] }}</td>
-            <td>{{ row["OrderDate"] }}</td>
-            <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
-            <td>{{ row["Status"] }}</td>
-            <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
-            <td>
-                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}" class="btn btn-info btn-sm">View</a>
-                <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row['OrderID']) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">delete</a>
-            </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-    </tbody>
-</table>
-
-<h3 class="text-center m-3">Sub orders</h3>
-<table id="ProductionOrderTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Product code</th>
-            <th>Date</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Assigend to</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in data %}
-        {% if row["Status"]!="Complete" and row["ParentOrderID"]!="" %}
-        <tr>
-            <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-            <td>{{ row["ProductCode"] }}</td>
-            <td>{{ row["OrderDate"] }}</td>
-            <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
-            <td>{{ row["Status"] }}</td>
-            <td>{% if row.AssignedUser is none or row.AssignedUser == "" %}EVERYBODY{% else %}{{ row.AssignedUser }}{% endif %}</td>
-            <td>
-                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}" class="btn btn-info btn-sm">View</a>
-                <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row['OrderID']) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">delete</a>
-            </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-    </tbody>
-</table>
-
-<p class="mt-3">
-    <a class="btn btn-secondary" data-bs-toggle="collapse" href="#collapseArchive" role="button" aria-expanded="false" aria-controls="collapseArchive">
-        Archive
-    </a>
-</p>
+<a class="btn btn-secondary mb-3" data-bs-toggle="collapse" href="#collapseArchive" role="button" aria-expanded="false" aria-controls="collapseArchive">
+    Show Archive
+</a>
 
 
+<!-- Cards Grid -->
+<div class="d-flex flex-wrap justify-content-center">
+    {% for row in data %}
+    {% if row["Status"] != "Complete" %}
+    <div class="card m-2 text-center" style="width: 12rem;">
+        <img class="card-img-top" src="{{ row['image'] }}" alt="Product Image" />
+        <div class="card-body">
+            <h6 class="card-title">{{ row['ProductCode'] }}</h6>
+            <p class="card-text small mb-2">
+                <strong>Order Date:</strong><br>
+                <span class="text-muted">{{ row["OrderDate"] }}</span><br><br>
+
+                <strong>Progress:</strong><br>
+                <span class="badge bg-secondary">{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</span><br><br>
+
+                <strong>Status:</strong><br>
+                <span class="badge 
+                    {% if row['Status'] == 'On Going' %}
+                        bg-warning text-dark
+                    {% elif row['Status'] == 'Complete' %}
+                        bg-success
+                    {% else %}
+                        bg-secondary
+                    {% endif %}
+                ">
+                    {{ row["Status"] }}
+                </span><br><br>
+
+                <strong>Assigned to:</strong><br>
+                <span class="badge 
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                        bg-dark
+                    {% else %}
+                        bg-primary
+                    {% endif %}
+                ">
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                        EVERYBODY
+                    {% else %}
+                        {{ row.AssignedUser }}
+                    {% endif %}
+                </span>
+            </p>
+            <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}" class="btn btn-info btn-sm">
+                <span class="mdi mdi-eye-outline"></span> View
+            </a>
+            <a href="{{ url_for('production.delete_ProductionOrder', OrderID=row['OrderID']) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete()">
+                <span class="mdi mdi-trash-can-outline"></span> Delete 
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
 
 
 <div class="collapse mb-3" id="collapseArchive">
+    <hr>
     <h2 class="text-center my-3">Completed production orders</h2>
-    <table id="completeProductionOrderTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Product code</th>
-                <th>Date</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            {% if row["Status"]=="Complete" %}
-            <tr>
-                <td><img class="rounded" src="{{ row['image'] }}" width="64" /></td>
-                <td>{{ row["ProductCode"] }}</td>
-                <td>{{ row["OrderDate"] }}</td>
-                <td>{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</td>
-                <td>{{ row["Status"] }}</td>
-                <td>
-                    <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}" class="btn btn-info btn-sm">View</a>
-                </td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="d-flex flex-wrap justify-content-center" >
+    {% for row in data %}
+    {% if row["Status"]=="Complete" %}
+    <div class="card m-2 text-center" style="width: 12rem;">
+        <img class="card-img-top" src="{{ row['image'] }}" alt="Product Image" />
+        <div class="card-body">
+            <h6 class="card-title">{{ row['ProductCode'] }}</h6>
+            <p class="card-text small mb-2">
+                <strong>Order Date:</strong><br>
+                <span class="text-muted">{{ row["OrderDate"] }}</span><br><br>
+
+                <strong>Progress:</strong><br>
+                <span class="badge bg-secondary">{{ row["QuantityCompleted"] }}/{{ row["Quantity"] }}</span><br><br>
+
+                <strong>Status:</strong><br>
+                <span class="badge 
+                    {% if row['Status'] == 'On Going' %}
+                        bg-warning text-dark
+                    {% elif row['Status'] == 'Complete' %}
+                        bg-success
+                    {% else %}
+                        bg-secondary
+                    {% endif %}
+                ">
+                    {{ row["Status"] }}
+                </span><br><br>
+
+                <strong>Assigned to:</strong><br>
+                <span class="badge 
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                        bg-dark
+                    {% else %}
+                        bg-primary
+                    {% endif %}
+                ">
+                    {% if row.AssignedUser is none or row.AssignedUser == '' %}
+                        EVERYBODY
+                    {% else %}
+                        {{ row.AssignedUser }}
+                    {% endif %}
+                </span>
+            </p>
+            <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['OrderID']) }}" class="btn btn-info btn-sm">
+                <span class="mdi mdi-eye-outline"></span> View
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
 </div>
 
 
