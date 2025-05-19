@@ -19,7 +19,11 @@ def login():
         else:
             flash("Credenziali non valide", "danger")
 
-    return render_template('login.html')
+    ip = request.remote_addr
+    localNetwork = (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("127."))
+    print(f"IP: {ip}, Local Network: {localNetwork}")
+
+    return render_template('login.html', localNetwork=localNetwork)
 
 @auth_bp.route('/logout')
 @login_required
@@ -61,8 +65,8 @@ def user():
 @auth_bp.route('/locallogin', methods=['GET', 'POST'])
 def localLogin():
     ip = request.remote_addr
-    # if not (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172.")):
-    #     return render_template('locallogin.html')
+    if not (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("127.")):
+        return render_template('locallogin.html')
     if request.method == 'POST':
         pin = request.form['pin']
 

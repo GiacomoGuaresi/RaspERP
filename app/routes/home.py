@@ -84,7 +84,7 @@ def whoami():
     returnObject = {}
     
     ip = request.remote_addr
-    if ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."):
+    if ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("127."):
         returnObject["Side"] = "Internal"
         returnObject["ip"] = ip
     else:

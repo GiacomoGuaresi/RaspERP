@@ -16,13 +16,21 @@
       </label>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Login</button>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
+
+    {% if localNetwork %}
+    <hr>
+    <div class="mt-3">
+      <a href="{{ url_for('auth.localLogin') }}" class="btn btn-secondary">Usa Login locale</a>
+    </div>
+    {% endif %}
   </form>
 </div>
 {% endblock %}
