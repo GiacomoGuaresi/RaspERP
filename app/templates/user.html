@@ -2,11 +2,12 @@
 {% block content %}
 <div class="container mt-4">
     <h2>User Settings</h2>
+    <p><strong>Username:</strong> {{ user.id }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>PIN:</strong> {{ user.pin }}</p>
+
+    <h3>Aggiorna Password</h3>
     <form method="POST">
-        <div class="mb-3">
-            <label for="username" class="form-label">New Username</label>
-            <input type="text" name="username" class="form-control" value="{{ user.username }}">
-        </div>
         <div class="mb-3">
             <label for="current_password" class="form-label">Current Password</label>
             <input type="password" name="current_password" class="form-control" required>

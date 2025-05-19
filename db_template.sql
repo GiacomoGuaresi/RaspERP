@@ -53,5 +53,6 @@ CREATE TABLE "User" (
     "Username" TEXT PRIMARY KEY,
     "Email" TEXT,
     "Password" TEXT,
-    "DashboardJson" TEXT DEFAULT "{}"
+    "DashboardJson" TEXT DEFAULT "{}",
+    "Pin" INTEGER
 );

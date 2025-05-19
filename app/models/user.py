@@ -2,10 +2,11 @@ from flask_login import UserMixin
 from app.database import get_db
 
 class User(UserMixin):
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, pin):
         self.id = username
         self.email = email
         self.password = password
+        self.pin = pin
 
     @staticmethod
     def get_by_email(email):
@@ -18,10 +19,10 @@ class User(UserMixin):
 
     def load_user(user_id):
         db = get_db()
-        cur = db.execute('SELECT Username, Email, Password FROM User WHERE Username = ?', (user_id,))
+        cur = db.execute('SELECT Username, Email, Password, Pin FROM User WHERE Username = ?', (user_id,))
         row = cur.fetchone()
         if row:
-            return User(row['Username'], row['Email'], row['Password'])
+            return User(row['Username'], row['Email'], row['Password'], row['Pin'])
         return None
 
     def update(self):

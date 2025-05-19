@@ -21,8 +21,6 @@ def login():
 
     ip = request.remote_addr
     localNetwork = (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("127."))
-    print(f"IP: {ip}, Local Network: {localNetwork}")
-
     return render_template('login.html', localNetwork=localNetwork)
 
 @auth_bp.route('/logout')
@@ -41,16 +39,12 @@ def user():
         return redirect(url_for("auth.login"))
 
     if request.method == "POST":
-        new_username = request.form.get("username")
         current_password = request.form.get("current_password")
         new_password = request.form.get("new_password")
 
         if not (user.password == sha256(current_password.encode('utf-8')).hexdigest()):
             flash("Current password is incorrect.", "danger")
             return redirect(url_for("auth.user"))
-
-        if new_username:
-            user.username = new_username
 
         if new_password:
             user.password = sha256(new_password.encode('utf-8')).hexdigest()
@@ -59,6 +53,7 @@ def user():
         flash("User updated successfully.", "success")
         return redirect(url_for("auth.user"))
 
+    print(user)
     return render_template("user.html", user=user)
 
 
