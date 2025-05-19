@@ -97,7 +97,7 @@
                 {% else %}
                 <span class="badge bg-secondary">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</span>
                 {% endif %}
-
+                <br><br>
                 <strong>Assigned to:</strong><br>
                 <span class="badge 
                     {% if row.AssignedUser is none or row.AssignedUser == '' %}
