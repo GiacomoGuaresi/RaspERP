@@ -114,13 +114,6 @@ def increase_ProductionOrder(OrderID):
 
     if row:
         if row["QuantityCompleted"] < row["Quantity"]:
-
-            query_db('UPDATE ProductionOrder SET QuantityCompleted = QuantityCompleted + 1 WHERE OrderID = ?',
-                     (OrderID,))
-
-            query_db('UPDATE ProductionOrderProgress SET QuantityCompleted = QuantityCompleted + 1 WHERE OrderID = ? AND ProductCode = ?',
-                     (row["ParentOrderID"], row["ProductCode"]))
-
             productCode = query_db(
                 'SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
 
