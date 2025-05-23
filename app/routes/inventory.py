@@ -70,52 +70,68 @@ def increase_Inventory(ProductCode, delta):
     cursor = db.cursor()
 
     cursor.execute("""
-        SELECT ProgressID FROM ProductionOrderProgress 
+        SELECT ProgressID, ProductionOrderProgress.QuantityRequired, ProductionOrderProgress.QuantityCompleted 
+        FROM ProductionOrderProgress 
         JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
         WHERE Status = "On Going"
         AND ProductionOrderProgress.QuantityCompleted < ProductionOrderProgress.QuantityRequired
         AND ProductionOrderProgress.ProductCode = ?
     """, (ProductCode,))
-    neededOrders = cursor.fetchone()
+    neededOrder = cursor.fetchone()
 
-    if neededOrders:
-        progressId = neededOrders["ProgressID"]
+    if neededOrder:
+        progressId = neededOrder["ProgressID"]
+        qty_required = neededOrder["QuantityRequired"]
+        qty_completed = neededOrder["QuantityCompleted"]
+        needed_qty = qty_required - qty_completed
+
+        to_use = min(delta, needed_qty)
+        remaining = delta - to_use
+
+        # Aggiorna ProductionOrderProgress
         cursor.execute("""
             UPDATE ProductionOrderProgress 
             SET QuantityCompleted = QuantityCompleted + ? 
             WHERE ProgressID = ?
-        """, (delta, progressId))
+        """, (to_use, progressId))
 
+        # Aggiorna ProductionOrder
         cursor.execute("""
-            SELECT OrderID FROM ProductionOrder 
+            SELECT OrderID, Quantity, QuantityCompleted 
+            FROM ProductionOrder 
             WHERE Status = "On Going" 
-            AND QuantityCompleted < Quantity 
             AND ProductCode = ?
+            AND QuantityCompleted < Quantity
         """, (ProductCode,))
         order = cursor.fetchone()
 
         if order:
+            order_needed = order["Quantity"] - order["QuantityCompleted"]
+            to_use_order = min(to_use, order_needed)  # per sicurezza
             cursor.execute("""
                 UPDATE ProductionOrder 
                 SET QuantityCompleted = QuantityCompleted + ? 
                 WHERE OrderID = ?
-            """, (delta, order["OrderID"]))
+            """, (to_use_order, order["OrderID"]))
 
+        # Aggiorna inventario
         cursor.execute("""
             UPDATE Inventory 
-            SET QuantityOnHand = QuantityOnHand + ?, Locked = Locked + ? 
+            SET QuantityOnHand = QuantityOnHand + ?, 
+                Locked = Locked + ? 
             WHERE ProductCode = ?
-        """, (delta, delta, ProductCode))
+        """, (delta, to_use, ProductCode))
 
         log_action(
-            f"Added {delta} unit(s) of {ProductCode} for production progress {progressId}")
+            f"Added {delta} unit(s) of {ProductCode}: {to_use} locked for production progress {progressId}, {remaining} available.")
     else:
+        # Nessun ordine in corso -> solo disponibile
         cursor.execute("""
             UPDATE Inventory 
             SET QuantityOnHand = QuantityOnHand + ? 
             WHERE ProductCode = ?
         """, (delta, ProductCode))
-        log_action(f"Added {delta} unit(s) of {ProductCode}")
+        log_action(f"Added {delta} unit(s) of {ProductCode} (all available)")
 
     db.commit()
 
