@@ -9,6 +9,13 @@ from flask_login import login_required
 inventory_bp = Blueprint("inventory", __name__)
 
 
+def group_by_category(data):
+    grouped = defaultdict(list)
+    for item in data:
+        grouped[item['Category']].append(item)
+    return grouped
+
+
 @inventory_bp.route('/Inventory')
 @login_required
 def view_Inventory():
@@ -19,35 +26,34 @@ def view_Inventory():
         'SELECT * FROM Inventory LEFT JOIN Product ON Product.ProductCode = Inventory.ProductCode ORDER BY Inventory.ProductCode ASC')
     return render_template('Inventory.html', data=data, selected_category=category, search_text=search, error=error)
 
+
 @inventory_bp.route('/Inventory/missingParts')
 @login_required
 def missingParts_Inventory():
-    ordersOnGoing = query_db("""SELECT ProductionOrderProgress.*, Product.Category, ProductionOrder.ProductCode as OrderProductCode 
+    ordersOnGoing = query_db("""SELECT Product.Category, ProductionOrderProgress.ProductCode, SUM(ProductionOrderProgress.QuantityRequired) as QuantityRequired, SUM(ProductionOrderProgress.QuantityCompleted) as QuantityCompleted
     FROM ProductionOrderProgress
     JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
     JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-    WHERE Status = "On Going"
-    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
+    WHERE Status IS "On Going" 
+	AND Product.Category IS NOT "Subassembly"
+    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted
+	GROUP BY ProductionOrderProgress.ProductCode""")
 
-    ordersPlanned = query_db("""SELECT ProductionOrderProgress.*, Product.Category, Product.Image, ProductionOrder.ProductCode as OrderProductCode 
+    ordersPlanned = query_db("""SELECT Product.Category, ProductionOrderProgress.ProductCode, SUM(ProductionOrderProgress.QuantityRequired) as QuantityRequired, SUM(ProductionOrderProgress.QuantityCompleted) as QuantityCompleted
     FROM ProductionOrderProgress
     JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
     JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-    WHERE Status = "Planned"
-    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted""")
+    WHERE Status IS "Planned" 
+	AND Product.Category IS NOT "Subassembly"
+    AND ProductionOrderProgress.QuantityRequired > ProductionOrderProgress.QuantityCompleted
+	GROUP BY ProductionOrderProgress.ProductCode""")
 
-    # Raggruppa ordersOnGoing per OrderProductCode
-    grouped_orders_ongoing = defaultdict(list)
-    for row in ordersOnGoing:
-        grouped_orders_ongoing[row["OrderProductCode"]].append(row)
+    grouped_ongoing = group_by_category(ordersOnGoing)
+    grouped_planned = group_by_category(ordersPlanned)
 
-    # Raggruppa ordersPlanned per OrderProductCode
-    grouped_orders_planned = defaultdict(list)
-    for row in ordersPlanned:
-        grouped_orders_planned[row["OrderProductCode"]].append(row)
+    return render_template("inventory_missingParts.html", grouped_orders_ongoing=grouped_ongoing, grouped_orders_planned=grouped_planned)
 
-    return render_template("inventory_missingParts.html", grouped_orders_ongoing=grouped_orders_ongoing, grouped_orders_planned=grouped_orders_planned)
-    
+
 @inventory_bp.route('/Inventory/increase/<ProductCode>')
 @login_required
 def increase_Inventory(ProductCode):
@@ -57,6 +63,7 @@ def increase_Inventory(ProductCode):
 
     increase_Inventory(ProductCode, delta)
     return redirect(url_for('inventory.view_Inventory', category=category, search=search))
+
 
 def increase_Inventory(ProductCode, delta):
     db = get_db()
@@ -100,7 +107,8 @@ def increase_Inventory(ProductCode, delta):
             WHERE ProductCode = ?
         """, (delta, delta, ProductCode))
 
-        log_action(f"Added {delta} unit(s) of {ProductCode} for production progress {progressId}")
+        log_action(
+            f"Added {delta} unit(s) of {ProductCode} for production progress {progressId}")
     else:
         cursor.execute("""
             UPDATE Inventory 
@@ -110,6 +118,7 @@ def increase_Inventory(ProductCode, delta):
         log_action(f"Added {delta} unit(s) of {ProductCode}")
 
     db.commit()
+
 
 @inventory_bp.route('/Inventory/decrease/<ProductCode>')
 @login_required
@@ -122,7 +131,8 @@ def decrease_Inventory(ProductCode):
     cursor = db.cursor()
     error = ""
 
-    cursor.execute("SELECT QuantityOnHand, Locked FROM Inventory WHERE ProductCode = ?", (ProductCode,))
+    cursor.execute(
+        "SELECT QuantityOnHand, Locked FROM Inventory WHERE ProductCode = ?", (ProductCode,))
     row = cursor.fetchone()
 
     if row and (row["QuantityOnHand"] - row["Locked"]) >= delta:

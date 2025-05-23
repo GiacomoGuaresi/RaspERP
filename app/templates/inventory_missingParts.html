@@ -6,30 +6,14 @@
         <div class="col-12 col-lg-6">
             <h3 class="mb-3">Missing parts on Current Orders</h3>
 
-            {% for order_id, items in grouped_orders_ongoing.items() %}
-            {% set categories = items | map(attribute='Category') | list %}
+            {% for category, items in grouped_orders_ongoing.items() %}
             <div class="mb-3">
-                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder{{ loop.index }}"
-                    aria-expanded="false" aria-controls="collapseOrder{{ loop.index }}">
-                    <span>Order ID: {{ order_id }}</span>
-                    <span>
-                        {% if 'Product' in categories %}
-                        <i class="mdi mdi-package-variant-closed me-1" title="Product"></i>
-                        {% endif %}
-                        {% if 'Component' in categories %}
-                        <i class="mdi mdi-chip me-1" title="Component"></i>
-                        {% endif %}
-                        {% if 'PrintedPart' in categories %}
-                        <i class="mdi mdi-printer-3d me-1" title="Printed Part"></i>
-                        {% endif %}
-                        {% if 'Subassembly' in categories %}
-                        <i class="mdi mdi-cogs me-1" title="Subassembly"></i>
-                        {% endif %}
-                    </span>
+                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOngoing{{ loop.index }}" aria-expanded="false" aria-controls="collapseOngoing{{ loop.index }}">
+                    <span>{{ category }}</span>
+                    <span><i class="mdi mdi-chevron-down"></i></span>
                 </button>
 
-                <div class="collapse mt-2" id="collapseOrder{{ loop.index }}">
+                <div class="collapse mt-2" id="collapseOngoing{{ loop.index }}">
                     <div class="card card-body">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -53,33 +37,19 @@
                 </div>
             </div>
             {% endfor %}
+
         </div>
 
         <div class="col-12 col-lg-6">
             <h3 class="mb-3">Missing parts on Planned Orders</h3>
 
-            {% for order_product_code, items in grouped_orders_planned.items() %}
-            {% set categories = items | map(attribute='Category') | list %}
+            {% for category, items in grouped_orders_planned.items() %}
             <div class="mb-3">
-                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center"
-                    type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanned{{ loop.index }}"
-                    aria-expanded="false" aria-controls="collapsePlanned{{ loop.index }}">
-                    <span>Order ID: {{ order_id }}</span>
-                    <span>
-                        {% if 'Product' in categories %}
-                        <i class="mdi mdi-package-variant-closed me-1" title="Product"></i>
-                        {% endif %}
-                        {% if 'Component' in categories %}
-                        <i class="mdi mdi-chip me-1" title="Component"></i>
-                        {% endif %}
-                        {% if 'PrintedPart' in categories %}
-                        <i class="mdi mdi-printer-3d me-1" title="Printed Part"></i>
-                        {% endif %}
-                        {% if 'Subassembly' in categories %}
-                        <i class="mdi mdi-cogs me-1" title="Subassembly"></i>
-                        {% endif %}
-                    </span>
+                <button class="btn btn-secondary w-100 text-start d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePlanned{{ loop.index }}" aria-expanded="false" aria-controls="collapsePlanned{{ loop.index }}">
+                    <span>{{ category }}</span>
+                    <span><i class="mdi mdi-chevron-down"></i></span>
                 </button>
+
                 <div class="collapse mt-2" id="collapsePlanned{{ loop.index }}">
                     <div class="card card-body">
                         <table class="table table-striped mb-0">
@@ -104,17 +74,7 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col text-start">
-            <h4>Legenda</h4>
-            <ul>
-                <li><i class="mdi mdi-package-variant-closed me-1" title="Product"></i> Product</li>
-                <li><i class="mdi mdi-chip me-1" title="Component"></i> Component</li>
-                <li><i class="mdi mdi-printer-3d me-1" title="Printed Part"></i> Printed Part</li>
-                <li><i class="mdi mdi-cogs me-1" title="Subassembly"></i> Subassembly</li>
-            </ul>
+
         </div>
     </div>
 </div>
