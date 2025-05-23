@@ -62,22 +62,6 @@ def delete_ProductionOrder(OrderID):
     delete_ProductionOrder_recursive(OrderID)
     return redirect(url_for('production.view_ProductionOrder'))
 
-
-@production_bp.route('/ProductionOrder/complete/<OrderID>')
-@login_required
-def complete_ProductionOrder(OrderID):
-    query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
-             ("Complete", OrderID))
-
-    quantity = query_db(
-        'SELECT Quantity FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["Quantity"]
-    productCode = query_db(
-        'SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
-    increase_Inventory(productCode, quantity)
-
-    return redirect(url_for('production.view_ProductionOrder'))
-
-
 @production_bp.route('/ProductionOrder/ongoing/<OrderID>')
 @login_required
 def ongoing_ProductionOrder(OrderID):
@@ -144,6 +128,15 @@ def increase_ProductionOrder(OrderID):
                 (OrderID,)
             )
             db.commit()
+            productCode = query_db(
+                'SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
+            increase_Inventory(productCode, 1)
+            if (quantity_present + 1) == quantity_required:
+                cursor.execute(
+                    'UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
+                    ("Complete", OrderID)
+                )
+                db.commit()
 
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
 
@@ -164,6 +157,12 @@ def decrease_ProductionOrder(OrderID):
             (OrderID,)
         )
         db.commit()
+
+    cursor.execute(
+        'UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
+        ("On Going", OrderID)
+    )
+    db.commit()
 
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
 

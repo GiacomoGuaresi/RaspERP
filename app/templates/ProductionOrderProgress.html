@@ -58,6 +58,7 @@
         </div>
     </div>
 </div>
+{% if order['Status'] == "On Going" %}
 <div class="btn-group inventory-control" role="group">
     <a href="{{ url_for('production.increase_ProductionOrder', OrderID=order['OrderID']) }}" class="btn btn-success mb-3">
         <span class="mdi mdi-plus"></span>
@@ -66,15 +67,11 @@
         <span class="mdi mdi-minus"></span>
     </a>
 </div>
+{% endif %}
 
 {% if order['Status'] == "Planned" %}
 <a href="{{ url_for('production.ongoing_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">
-    <span class="mdi mdi-play"></span> Set as On Going
-</a>
-{% endif %}
-{% if order['Status'] == "On Going" %}
-<a href="{{ url_for('production.complete_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-success mb-3">
-    <span class="mdi mdi-check"></span> Set as Complete
+    <span class="mdi mdi-play"></span> Start Production
 </a>
 {% endif %}
 
