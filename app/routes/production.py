@@ -31,8 +31,9 @@ def add_ProductionOrder():
         parentOrderID = request.form['ParentOrderID']
         assignedUser = request.form['AssignedUser']
         status = request.form['Status']
-        add_ProductionOrder_process(
+        orderID = add_ProductionOrder_process(
             orderDate, code, quantity, parentOrderID, assignedUser, status)
+        addAllSub_ProductionOrder(orderID)
         return redirect(url_for('production.view_ProductionOrder'))
 
     orderDate = request.args.get('date', date.today().isoformat())
@@ -67,9 +68,11 @@ def delete_ProductionOrder(OrderID):
 def complete_ProductionOrder(OrderID):
     query_db('UPDATE ProductionOrder SET Status = ? WHERE OrderID = ?',
              ("Complete", OrderID))
-    
-    quantity = query_db('SELECT Quantity FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["Quantity"]
-    productCode = query_db('SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
+
+    quantity = query_db(
+        'SELECT Quantity FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["Quantity"]
+    productCode = query_db(
+        'SELECT ProductCode FROM ProductionOrder WHERE OrderID = ?', (OrderID,))[0]["ProductCode"]
     increase_Inventory(productCode, quantity)
 
     return redirect(url_for('production.view_ProductionOrder'))
@@ -165,43 +168,6 @@ def decrease_ProductionOrder(OrderID):
     return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
 
 
-@production_bp.route('/ProductionOrder/addAllSub/<OrderID>')
-@login_required
-def addAllSub_ProductionOrder(OrderID):
-    baseOrderInfo = query_db(
-        """select * from ProductionOrder where OrderID = ?""", (OrderID,))
-    orderDate = baseOrderInfo[0]["OrderDate"]
-    status = baseOrderInfo[0]["Status"]
-
-    def addAllSub_ProductionOrder_recursive(OrderID, orderDate, status):
-        data = query_db("""SELECT *
-            FROM ProductionOrderProgress
-            JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
-            LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID AND ProductionOrder.ProductCode = ProductionOrderProgress.ProductCode
-            WHERE ProductionOrderProgress.OrderID = ? AND Category = "Subassembly" and ProductionOrder.OrderID IS null""", (OrderID,))
-        for row in data:
-            metadata = json.loads(row["Metadata"])
-
-            code = row["ProductCode"]
-            quantity = row["QuantityRequired"] - row["QuantityCompleted"]
-            parentOrderID = OrderID
-            assignedUser = metadata.get("DefaultUser", "")
-
-            log_action("Create Suborder for " + code)
-            print("Create Suborder for " + code)
-            inserted_id = add_ProductionOrder_process(
-                orderDate, code, quantity, parentOrderID, assignedUser, status)
-            
-            if(status == "On Going"):
-                ongoing_ProductionOrder(inserted_id)
-
-            addAllSub_ProductionOrder_recursive(inserted_id, orderDate, status)
-
-    addAllSub_ProductionOrder_recursive(OrderID, orderDate, status)
-
-    return redirect(url_for('progress.view_ProductionOrderProgress', OrderID=OrderID))
-
-
 def add_ProductionOrder_process(orderDate, code, quantity, parentOrderID, assignedUser, status):
     db = get_db()
     cursor = db.cursor()
@@ -230,3 +196,36 @@ def add_ProductionOrder_process(orderDate, code, quantity, parentOrderID, assign
     db.commit()
 
     return inserted_id
+
+
+def addAllSub_ProductionOrder(OrderID):
+    baseOrderInfo = query_db(
+        """select * from ProductionOrder where OrderID = ?""", (OrderID,))
+    orderDate = baseOrderInfo[0]["OrderDate"]
+    status = baseOrderInfo[0]["Status"]
+
+    def addAllSub_ProductionOrder_recursive(OrderID, orderDate, status):
+        data = query_db("""SELECT *
+            FROM ProductionOrderProgress
+            JOIN Product ON ProductionOrderProgress.ProductCode = Product.ProductCode
+            LEFT JOIN ProductionOrder ON ProductionOrder.ParentOrderID = ProductionOrderProgress.OrderID AND ProductionOrder.ProductCode = ProductionOrderProgress.ProductCode
+            WHERE ProductionOrderProgress.OrderID = ? AND Category = "Subassembly" and ProductionOrder.OrderID IS null""", (OrderID,))
+        for row in data:
+            metadata = json.loads(row["Metadata"])
+
+            code = row["ProductCode"]
+            quantity = row["QuantityRequired"] - row["QuantityCompleted"]
+            parentOrderID = OrderID
+            assignedUser = metadata.get("DefaultUser", "")
+
+            log_action("Create Suborder for " + code)
+            print("Create Suborder for " + code)
+            inserted_id = add_ProductionOrder_process(
+                orderDate, code, quantity, parentOrderID, assignedUser, status)
+
+            if (status == "On Going"):
+                ongoing_ProductionOrder(inserted_id)
+
+            addAllSub_ProductionOrder_recursive(inserted_id, orderDate, status)
+
+    addAllSub_ProductionOrder_recursive(OrderID, orderDate, status)

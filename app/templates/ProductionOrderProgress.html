@@ -77,9 +77,6 @@
     <span class="mdi mdi-check"></span> Set as Complete
 </a>
 {% endif %}
-<a href="{{ url_for('production.addAllSub_ProductionOrder', OrderID=order['OrderID'])}}" class="btn btn-warning mb-3">
-    <span class="mdi mdi-auto-fix"></span> Add All Subassembly task
-</a>
 
 <div class="d-flex flex-wrap justify-content-center">
     {% for row in data %}
