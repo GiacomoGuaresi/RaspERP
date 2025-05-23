@@ -23,8 +23,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42"
-                    height="42">
+                <img class="rounded" src="{{ url_for('static', filename = 'logo.png') }}" alt="Bootstrap" width="42" height="42">
                 RaspERP
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -33,26 +32,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% if g.selected_user and g.selected_user != 'anonimo' %}
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link"
-                            href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Inventory
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('inventory.view_Inventory') }}">View
-                                    inventory</a></li>
-                            <li><a class="dropdown-item"
-                                    href="{{ url_for('inventory.missingParts_Inventory') }}">Missing parts</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of
-                            materials</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products
-                            Graph</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('production.view_ProductionOrder') }}">Production orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.view_Inventory') }}">Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('inventory.missingParts_Inventory') }}">Missing parts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('product.view_Product') }}">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.view_BillOfMaterials') }}">Bill of materials</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('bom.graphs_BillOfMaterials') }}">Products Graph</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('metadata.view_Metadata') }}">Metadata</a>
                     </li>
                 </ul>
@@ -64,8 +49,7 @@
                     {% if g.selected_user and g.selected_user != 'anonimo' %}
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{selected_user}}
                             </a>
                             <ul class="dropdown-menu">
@@ -95,20 +79,17 @@
                 </div>
             </div>
             <p class="text-end">
-                <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseLogs" role="button"
-                    aria-expanded="false" aria-controls="collapseLogs">
+                <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseLogs" role="button" aria-expanded="false" aria-controls="collapseLogs">
                     Logs
                 </a>
 
-                <a class="btn btn-outline-secondary" href="{{ url_for('databasemanager.view_DatabaseManager') }}"
-                    role="button">
+                <a class="btn btn-outline-secondary" href="{{ url_for('databasemanager.view_DatabaseManager') }}" role="button">
                     Database manager
                 </a>
             </p>
         </div>
         <div class="container">
-            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi"
-                    class="text-light text-decoration-none" target="_blank">GitHub</a></p>
+            <p class="mb-1">&copy; 2025 - Giacomo Guaresi | <a href="https://github.com/giacomoguaresi" class="text-light text-decoration-none" target="_blank">GitHub</a></p>
             <p class="small mb-0">Built with Flask & Bootstrap 5</p>
         </div>
     </footer>
