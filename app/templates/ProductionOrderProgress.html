@@ -120,26 +120,16 @@
                 </span>
             </p>
             {% if row['Category'] == "Subassembly" %}
-            {% if row['childOrderID'] %}
-            <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}" class="btn btn-primary btn-sm">
-                <span class="mdi mdi-eye-outline"></span> View
-            </a>
-            {% else %}
-            <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID'], status=order['Status']) }}" class="btn btn-warning btn-sm add-productionorder">
-                <span class="mdi mdi-auto-fix"></span> Create
-            </a>
-            {% endif %}
-            {% else %}
-            <div class="btn-group inventory-control" role="group">
-                <a href="{{ url_for('progress.increase_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-success btn-sm">
-                    <span class="mdi mdi-plus"></span>
+                {% if row['childOrderID'] %}
+                <a href="{{ url_for('progress.view_ProductionOrderProgress', OrderID=row['childOrderID']) }}" class="btn btn-primary btn-sm">
+                    <span class="mdi mdi-eye-outline"></span> View
                 </a>
-                <a href="{{ url_for('progress.decrease_ProductionOrderProgress', ProgressID=row['ProgressID'], OrderID=order['OrderID']) }}" class="btn btn-danger btn-sm">
-                    <span class="mdi mdi-minus"></span>
+                {% else %}
+                <a href="{{ url_for('production.add_ProductionOrder', date=current_date, code=row['ProductCode'], quantity=(row['QuantityRequired'] - row['QuantityCompleted']), parentOrderID=order['OrderID'], status=order['Status']) }}" class="btn btn-warning btn-sm add-productionorder">
+                    <span class="mdi mdi-auto-fix"></span> Create
                 </a>
-            </div>
+                {% endif %}
             {% endif %}
-
         </div>
     </div>
     {% endfor %}
