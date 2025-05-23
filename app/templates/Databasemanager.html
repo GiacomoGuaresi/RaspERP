@@ -9,8 +9,7 @@
     <button type="submit" class="btn btn-primary me-2">Scarica database</button>
   </form>
 
-  <form action="{{ url_for('databasemanager.upload_db') }}" method="post" enctype="multipart/form-data"
-    class="d-inline">
+  <form action="{{ url_for('databasemanager.upload_db') }}" method="post" enctype="multipart/form-data" class="d-inline">
     <label class="btn btn-secondary me-2 mb-0">
       Carica nuovo database
       <input type="file" name="db_file" accept=".db" hidden onchange="this.form.submit()">
@@ -22,9 +21,13 @@
   </form>
 
   <!-- Button to trigger modal -->
-  <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#restoreModal">
+  <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#restoreModal">
     Ripristina backup
   </button>
+
+  <form action="{{ url_for('databasemanager.git_update') }}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-warning float-end">Aggiorna (git pull)</button>
+  </form>
 </div>
 
 <!-- Modal for restore -->
@@ -61,12 +64,12 @@
       <span class="badge bg-success me-2 command-badge" data-command="INSERT INTO ">INSERT</span>
       <span class="badge bg-warning text-dark me-2 command-badge" data-command="UPDATE  SET ">UPDATE</span>
       <span class="badge bg-danger me-2 command-badge" data-command="DELETE FROM ">DELETE</span>
-    
+
       {% for table in tables %}
       <span class="badge bg-secondary me-2 table-badge" data-table="{{ table }}">{{ table }}</span>
       {% endfor %}
     </div>
-    
+
     <textarea class="form-control" id="query" name="query" rows="6" required>{{ request.form.query or '' }}</textarea>
   </div>
   <button type="submit" class="btn btn-primary mt-2">Esegui</button>

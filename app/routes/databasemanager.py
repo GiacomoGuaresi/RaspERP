@@ -6,6 +6,7 @@ import os
 import shutil
 import time
 from flask_login import login_required
+import subprocess
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__) + "/../..")
 DB_PATH = os.path.join(BASE_DIR, "database.db")
@@ -76,4 +77,17 @@ def restore_backup():
             flash(f"Backup {filename} ripristinato.", "success")
         else:
             flash("Backup non trovato.", "danger")
+    return redirect(url_for('databasemanager.view_DatabaseManager'))
+
+@databasemanager_bp.route('/update', methods=['POST'])
+@login_required
+def git_update():
+    try:
+        result = subprocess.run(['git', '-C', BASE_DIR, 'pull'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode == 0:
+            flash(f"Aggiornamento completato:<br><pre>{result.stdout}</pre>", "success")
+        else:
+            flash(f"Errore durante l'aggiornamento:<br><pre>{result.stderr}</pre>", "danger")
+    except Exception as e:
+        flash(f"Eccezione durante il git pull: {str(e)}", "danger")
     return redirect(url_for('databasemanager.view_DatabaseManager'))

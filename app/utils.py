@@ -11,10 +11,23 @@ def query_db(query, args=(), one=False):
         # Costruire la query con i valori interpolati (non eseguita ancora)
         full_query = query.replace("?", "{}").format(*map(repr, args))
 
-        cursor.execute(query, args)
-        rv = cursor.fetchall()
-        db.commit()
-        
+        # IF SELECT 
+        if query.strip().upper().startswith("SELECT"):
+            cursor.execute(query, args)
+            rv = cursor.fetchall()
+            db.commit()
+        elif query.strip().upper().startswith("INSERT"):
+            cursor.execute(query, args)
+            db.commit()
+            rv = cursor.lastrowid
+        elif query.strip().upper().startswith("UPDATE"):
+            cursor.execute(query, args)
+            db.commit()
+            rv = cursor.rowcount
+        elif query.strip().upper().startswith("DELETE"):
+            cursor.execute(query, args)
+            db.commit()
+            rv = cursor.rowcount
         # Loggare la query se non è una SELECT
         if not query.strip().upper().startswith("SELECT"):
             log_action(full_query)

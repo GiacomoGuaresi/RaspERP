@@ -66,10 +66,8 @@ def increase_Inventory(ProductCode):
 
 
 def increase_Inventory(ProductCode, delta):
-    db = get_db()
-    cursor = db.cursor()
-
-    cursor.execute("""
+    
+    rows = query_db("""
         SELECT ProgressID, QuantityRequired, ProductionOrderProgress.QuantityCompleted 
         FROM ProductionOrderProgress 
         JOIN ProductionOrder ON ProductionOrderProgress.OrderID = ProductionOrder.OrderID
@@ -77,7 +75,7 @@ def increase_Inventory(ProductCode, delta):
         AND ProductionOrderProgress.QuantityCompleted < ProductionOrderProgress.QuantityRequired
         AND ProductionOrderProgress.ProductCode = ?
     """, (ProductCode,))
-    neededOrder = cursor.fetchone()
+    neededOrder = rows[0] if rows else None
 
     if neededOrder:
         progressId = neededOrder["ProgressID"]
@@ -89,33 +87,33 @@ def increase_Inventory(ProductCode, delta):
         remaining = delta - to_use
 
         # Aggiorna ProductionOrderProgress
-        cursor.execute("""
+        query_db("""
             UPDATE ProductionOrderProgress 
             SET QuantityCompleted = QuantityCompleted + ? 
             WHERE ProgressID = ?
         """, (to_use, progressId))
 
         # Aggiorna ProductionOrder
-        cursor.execute("""
+        rows = query_db("""
             SELECT OrderID, Quantity, QuantityCompleted 
             FROM ProductionOrder 
             WHERE Status = "On Going" 
             AND ProductCode = ?
             AND QuantityCompleted < Quantity
         """, (ProductCode,))
-        order = cursor.fetchone()
+        order = rows[0] if rows else None
 
         if order:
             order_needed = order["Quantity"] - order["QuantityCompleted"]
             to_use_order = min(to_use, order_needed)  # per sicurezza
-            cursor.execute("""
+            query_db("""
                 UPDATE ProductionOrder 
                 SET QuantityCompleted = QuantityCompleted + ? 
                 WHERE OrderID = ?
             """, (to_use_order, order["OrderID"]))
 
         # Aggiorna inventario
-        cursor.execute("""
+        query_db("""
             UPDATE Inventory 
             SET QuantityOnHand = QuantityOnHand + ?, 
                 Locked = Locked + ? 
@@ -126,15 +124,12 @@ def increase_Inventory(ProductCode, delta):
             f"Added {delta} unit(s) of {ProductCode}: {to_use} locked for production progress {progressId}, {remaining} available.")
     else:
         # Nessun ordine in corso -> solo disponibile
-        cursor.execute("""
+        query_db("""
             UPDATE Inventory 
             SET QuantityOnHand = QuantityOnHand + ? 
             WHERE ProductCode = ?
         """, (delta, ProductCode))
         log_action(f"Added {delta} unit(s) of {ProductCode} (all available)")
-
-    db.commit()
-
 
 @inventory_bp.route('/Inventory/decrease/<ProductCode>')
 @login_required
@@ -143,16 +138,14 @@ def decrease_Inventory(ProductCode):
     search = request.args.get('search', '')
     delta = int(request.args.get('delta', 1))  # valore arbitrario
 
-    db = get_db()
-    cursor = db.cursor()
     error = ""
 
-    cursor.execute(
+    rows = query_db(
         "SELECT QuantityOnHand, Locked FROM Inventory WHERE ProductCode = ?", (ProductCode,))
-    row = cursor.fetchone()
+    row = rows[0] if rows else None
 
     if row and (row["QuantityOnHand"] - row["Locked"]) >= delta:
-        cursor.execute("""
+        query_db("""
             UPDATE Inventory 
             SET QuantityOnHand = QuantityOnHand - ? 
             WHERE ProductCode = ?
@@ -161,5 +154,4 @@ def decrease_Inventory(ProductCode):
     else:
         error = "Unable to extract the part from stock: not enough available quantity"
 
-    db.commit()
     return redirect(url_for('inventory.view_Inventory', category=category, search=search, error=error))
