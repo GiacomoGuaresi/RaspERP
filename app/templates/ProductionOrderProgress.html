@@ -84,8 +84,20 @@
             <p class="card-text small mb-2">
                 <strong>Category:</strong><br>
                 <span class="text-muted">{{ row["Category"] }}</span><br><br>
-
                 <strong>Progress:</strong><br>
+                {% if row['Category'] == "Subassembly" %}
+                <span class="badge 
+                    {% if row['Status'] == 'On Going' %}
+                        bg-warning text-dark
+                    {% elif row['Status'] == 'Complete' %}
+                        bg-success
+                    {% else %}
+                        bg-secondary
+                    {% endif %}
+                ">
+                    {{ row["Status"] }}
+                </span>
+                {% endif %}
                 {% if row["QuantityCompleted"] == row["QuantityRequired"] %}
                 <span class="badge bg-success">{{ row["QuantityCompleted"] }}/{{ row["QuantityRequired"] }} ({{(row["QuantityRequired"]/order["Quantity"])|int}}pcs foreach)</span>
                 {% else %}
