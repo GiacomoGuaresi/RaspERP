@@ -11,10 +11,10 @@ class User(UserMixin):
     @staticmethod
     def get_by_email(email):
         db = get_db()
-        cur = db.execute('SELECT Username, Email, Password FROM User WHERE Email = ?', (email,))
+        cur = db.execute('SELECT Username, Email, Password, Pin FROM User WHERE Email = ?', (email,))
         row = cur.fetchone()
         if row:
-            return User(row['Username'], row['Email'], row['Password'])
+            return User(row['Username'], row['Email'], row['Password'], row['Pin'])
         return None
 
     def load_user(user_id):
@@ -32,8 +32,8 @@ class User(UserMixin):
 
     def get_by_pin(pin):
         db = get_db()
-        cur = db.execute('SELECT Username, Email, Password FROM User WHERE Pin = ?', (pin,))
+        cur = db.execute('SELECT Username, Email, Password, Pin FROM User WHERE Pin = ?', (pin,))
         row = cur.fetchone()
         if row:
-            return User(row['Username'], row['Email'], row['Password'])
+            return User(row['Username'], row['Email'], row['Password'], row['Pin'])
         return None
